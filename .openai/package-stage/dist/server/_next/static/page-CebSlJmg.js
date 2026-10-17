@@ -1,1 +1,0 @@
-import{n as e}from"./navigation-errors-rcHzGTLm.js";import"./navigation.react-server-D_v5gwDO.js";function t(){e(`/produtos`)}export{t as default};
