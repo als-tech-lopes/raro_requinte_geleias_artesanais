@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root { --cream: #f7f1e5; --paper: #fffdf8; --ink: #28231e; --berry: #9c2348; --berry-dark: #701532; --leaf: #3f684e; --line: #e7dccb; }
+* { box-sizing: border-box; }
+html { background: var(--cream); }
+body { margin: 0; background: radial-gradient(circle at 78% 0%, rgba(232, 190, 153, .2), transparent 28rem), var(--cream); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+button, input, select, textarea { font: inherit; }
+button { cursor: pointer; }
+::selection { background: #e9b9c7; color: var(--berry-dark); }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.animate-rise { animation: rise .35s ease-out both; }
