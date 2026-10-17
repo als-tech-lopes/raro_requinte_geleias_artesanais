@@ -1,0 +1,157 @@
+{
+  "_cherry-BB1uFWBo.js": {
+    "file": "_next/static/chunks/cherry-BB1uFWBo.js",
+    "name": "cherry",
+    "imports": [
+      "_client-Ck1Q4Am8.js"
+    ]
+  },
+  "_client-Ck1Q4Am8.js": {
+    "file": "_next/static/chunks/client-Ck1Q4Am8.js",
+    "name": "client",
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js",
+      "_framework-D_rUT4EX.js"
+    ]
+  },
+  "_framework-D_rUT4EX.js": {
+    "file": "_next/static/chunks/framework-D_rUT4EX.js",
+    "name": "framework",
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js"
+    ]
+  },
+  "_loader-circle-j_BDcyjS.js": {
+    "file": "_next/static/chunks/loader-circle-j_BDcyjS.js",
+    "name": "loader-circle",
+    "imports": [
+      "_client-Ck1Q4Am8.js"
+    ]
+  },
+  "_navigation-errors-By4dF-Cc.js": {
+    "file": "_next/static/chunks/navigation-errors-By4dF-Cc.js",
+    "name": "navigation-errors",
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js",
+      "_framework-D_rUT4EX.js"
+    ]
+  },
+  "_rolldown-runtime-C60lm6uB.js": {
+    "file": "_next/static/chunks/rolldown-runtime-C60lm6uB.js",
+    "name": "rolldown-runtime"
+  },
+  "_types-CtAloorj.js": {
+    "file": "_next/static/chunks/types-CtAloorj.js",
+    "name": "types",
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js",
+      "_framework-D_rUT4EX.js"
+    ]
+  },
+  "app/login/page.tsx": {
+    "file": "_next/static/chunks/page-ChBfov17.js",
+    "name": "page",
+    "src": "app/login/page.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js",
+      "virtual:vinext-app-browser-entry",
+      "_client-Ck1Q4Am8.js",
+      "_types-CtAloorj.js",
+      "_cherry-BB1uFWBo.js",
+      "_loader-circle-j_BDcyjS.js",
+      "_framework-D_rUT4EX.js"
+    ]
+  },
+  "components/admin-shell.tsx": {
+    "file": "_next/static/chunks/admin-shell-uz5AfPKB.js",
+    "name": "admin-shell",
+    "src": "components/admin-shell.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js",
+      "virtual:vinext-app-browser-entry",
+      "_client-Ck1Q4Am8.js",
+      "_cherry-BB1uFWBo.js",
+      "_framework-D_rUT4EX.js"
+    ]
+  },
+  "components/auth/auth-gate.tsx": {
+    "file": "_next/static/chunks/auth-gate-CxMmZxXl.js",
+    "name": "auth-gate",
+    "src": "components/auth/auth-gate.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js",
+      "virtual:vinext-app-browser-entry",
+      "_client-Ck1Q4Am8.js",
+      "_loader-circle-j_BDcyjS.js",
+      "_framework-D_rUT4EX.js"
+    ]
+  },
+  "components/products/product-manager.tsx": {
+    "file": "_next/static/chunks/product-manager-fVvOBsIU.js",
+    "name": "product-manager",
+    "src": "components/products/product-manager.tsx",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js",
+      "_client-Ck1Q4Am8.js",
+      "_types-CtAloorj.js",
+      "_loader-circle-j_BDcyjS.js",
+      "_framework-D_rUT4EX.js"
+    ]
+  },
+  "node_modules/vinext/dist/shims/internal/app-route-prefetch-policy.js": {
+    "file": "_next/static/chunks/app-route-prefetch-policy-onPxrH8Y.js",
+    "name": "app-route-prefetch-policy",
+    "src": "node_modules/vinext/dist/shims/internal/app-route-prefetch-policy.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "virtual:vinext-app-browser-entry"
+    ]
+  },
+  "node_modules/vinext/dist/shims/layout-segment-context.js": {
+    "file": "_next/static/chunks/layout-segment-context-DD6O1D87.js",
+    "name": "layout-segment-context",
+    "src": "node_modules/vinext/dist/shims/layout-segment-context.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js",
+      "virtual:vinext-app-browser-entry",
+      "_framework-D_rUT4EX.js",
+      "_navigation-errors-By4dF-Cc.js"
+    ]
+  },
+  "node_modules/vinext/dist/shims/streamed-icons.js": {
+    "file": "_next/static/chunks/streamed-icons-B77DYGFv.js",
+    "name": "streamed-icons",
+    "src": "node_modules/vinext/dist/shims/streamed-icons.js",
+    "isDynamicEntry": true,
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js",
+      "_framework-D_rUT4EX.js"
+    ]
+  },
+  "virtual:vinext-app-browser-entry": {
+    "file": "_next/static/chunks/index-CD7Fi93K.js",
+    "name": "index",
+    "src": "virtual:vinext-app-browser-entry",
+    "isEntry": true,
+    "imports": [
+      "_rolldown-runtime-C60lm6uB.js",
+      "_framework-D_rUT4EX.js",
+      "_navigation-errors-By4dF-Cc.js"
+    ],
+    "dynamicImports": [
+      "node_modules/vinext/dist/shims/internal/app-route-prefetch-policy.js",
+      "virtual:vinext-app-browser-entry",
+      "node_modules/vinext/dist/shims/layout-segment-context.js",
+      "components/products/product-manager.tsx",
+      "node_modules/vinext/dist/shims/streamed-icons.js",
+      "app/login/page.tsx",
+      "components/admin-shell.tsx",
+      "components/auth/auth-gate.tsx"
+    ]
+  }
+}
