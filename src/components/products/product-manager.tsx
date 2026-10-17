@@ -3,10 +3,10 @@
 import { AlertTriangle, ChevronDown, Edit3, Leaf, PackagePlus, Search, Sparkles, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ProductForm } from "./product-form";
-import { mockProducts } from "@/lib/products/mock-data";
-import { createProduct, deleteProduct, getProductImageUrl, isDemoMode, listProducts, updateProduct, uploadProductImages } from "@/lib/products/repository";
-import type { ProductValidated } from "@/lib/products/schema";
-import type { Product } from "@/lib/products/types";
+import { mockProducts } from "@/services/products.mock";
+import { createProduct, deleteProduct, getProductImageUrl, isDemoMode, listProducts, updateProduct, uploadProductImages } from "@/services/products";
+import type { ProductValidated } from "@/schemas/product";
+import type { Product } from "@/types/product";
 
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 type View = { type: "list" } | { type: "create" } | { type: "edit"; product: Product };

@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "RR Geleias | Gestão artesanal",
-  description: "Gestão de produtos da RR Geleias Artesanais.",
+  description: "Gestão da produção e catálogo da RR Geleias Artesanais.",
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",

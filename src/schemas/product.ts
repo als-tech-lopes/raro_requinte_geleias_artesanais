@@ -10,13 +10,17 @@ export const productSchema = z.object({
   description: z.string().trim().max(3000).nullable().default(null),
   category: z.string().trim().min(2, "Informe a categoria.").max(80),
   net_weight: numberField("Peso").positive("O peso deve ser maior que zero."),
-  unit: z.string().trim().min(1).max(12),
+  unit: z.enum(["kg", "g", "L", "ml", "unidade"]),
   sale_price: numberField("Preço").nonnegative("O preço não pode ser negativo."),
   estimated_cost: numberField("Custo").nonnegative("O custo não pode ser negativo."),
   stock_quantity: numberField("Estoque").int("Use uma quantidade inteira.").nonnegative("O estoque não pode ser negativo."),
   status: z.enum(["ativo", "inativo", "esgotado"]),
   featured: z.boolean().default(false),
   main_image_path: z.string().trim().nullable().default(null),
+}).superRefine((value, context) => {
+  if (value.status === "esgotado" && value.stock_quantity !== 0) {
+    context.addIssue({ code: z.ZodIssueCode.custom, path: ["stock_quantity"], message: "Produto esgotado deve ter estoque zero." });
+  }
 });
 
 export type ProductFormValues = z.input<typeof productSchema>;

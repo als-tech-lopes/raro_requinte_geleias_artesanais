@@ -4,8 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, Loader2, Save } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { productSchema, slugify, type ProductFormValues, type ProductValidated } from "@/lib/products/schema";
-import type { Product } from "@/lib/products/types";
+import { productSchema, slugify, type ProductFormValues, type ProductValidated } from "@/schemas/product";
+import type { Product } from "@/types/product";
 
 const defaults: ProductFormValues = { name: "", slug: "", short_description: "", description: "", category: "Clássicas", net_weight: 250, unit: "g", sale_price: 0, estimated_cost: 0, stock_quantity: 0, status: "ativo", featured: false, main_image_path: null };
 

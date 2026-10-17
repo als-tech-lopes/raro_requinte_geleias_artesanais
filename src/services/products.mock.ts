@@ -1,4 +1,4 @@
-import type { Product } from "./types";
+import type { Product } from "@/types/product";
 
 export const mockProducts: Product[] = [
   { id: "6f5b4f57-8f77-4a2f-a884-5bd59b9f89a1", name: "Geleia de Morango", slug: "geleia-de-morango-250g", short_description: "Morango maduro, açúcar na medida e um toque de limão.", description: "Produzida em pequenos lotes para preservar cor, aroma e textura da fruta.", category: "Clássicas", net_weight: 250, unit: "g", sale_price: 26, estimated_cost: 10.4, stock_quantity: 18, status: "ativo", featured: true, main_image_path: null, created_at: "2026-10-05T12:00:00.000Z", updated_at: "2026-10-15T12:00:00.000Z" },
