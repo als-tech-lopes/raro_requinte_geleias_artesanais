@@ -36,6 +36,7 @@ yarn-error.log*
 
 # typescript
 next-env.d.ts
+*.tsbuildinfo
 
 # Maintained Vite plugin and worker sources.
 !/build/
@@ -56,3 +57,4 @@ next-env.d.ts
 /work/
 /.openai/package-stage/
 /.openai/*.zip
+/supabase/.temp/

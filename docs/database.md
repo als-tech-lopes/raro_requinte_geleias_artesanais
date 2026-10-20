@@ -107,6 +107,8 @@ Em um projeto vazio, abra **SQL Editor**, copie integralmente `supabase/migratio
 ## Como testar
 
 1. Execute o teste estrutural no SQL Editor copiando `supabase/tests/001_schema_smoke.sql`. O resultado esperado é `Schema smoke test: OK`.
+
+Para o modulo de ingredientes, aplique tambem `supabase/migrations/202610180001_ingredientes_compras.sql` e siga os testes descritos em `docs/ingredients-module.md`.
 2. Em **Authentication → Users**, crie o usuário administrativo.
 3. No SQL Editor, substitua o UUID e ative o perfil:
 

@@ -10,3 +10,27 @@ button { cursor: pointer; }
 ::selection { background: #e9b9c7; color: var(--berry-dark); }
 @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .animate-rise { animation: rise .35s ease-out both; }
+.catalog-public { overflow-x: clip; background: #f7f1e5; }
+.catalog-public .font-serif { font-family: Georgia, "Times New Roman", serif; letter-spacing: -.015em; }
+.catalog-public a, .catalog-public button { -webkit-tap-highlight-color: transparent; }
+
+@media print {
+  @page { size: A4; margin: 14mm; }
+  body { background: white !important; }
+  body * { visibility: hidden; }
+  .recipe-print, .recipe-print * { visibility: visible; }
+  .recipe-print {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  .recipe-no-print { display: none !important; }
+  .recipe-print table { page-break-inside: avoid; }
+  .sale-print, .sale-print * { visibility: visible; }
+  .sale-print { position: absolute; inset: 0; width: 100%; border: 0 !important; box-shadow: none !important; }
+  .sale-no-print { display: none !important; }
+}

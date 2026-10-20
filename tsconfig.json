@@ -34,14 +34,20 @@
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "scripts/**/*.ts",
+    "scripts/**/*.mts",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "*.ts",
+    "*.mts"
   ],
   "exclude": [
     "node_modules",
-    "examples"
+    "examples",
+    "components",
+    "hooks",
+    ".openai"
   ]
 }

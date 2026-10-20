@@ -1,0 +1,10 @@
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { AddToCart } from "./add-to-cart";
+import { PublicImage } from "./public-image";
+import type { CatalogProduct } from "@/types/catalog";
+
+const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+export function ProductCard({ product, showPrice = true }: { product: CatalogProduct; showPrice?: boolean }) {
+  return <article className="group overflow-hidden rounded-[1.5rem] border border-[#dfd4c2] bg-[#fffdf8] shadow-[0_14px_35px_rgba(57,39,27,.07)] transition hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(57,39,27,.12)]"><Link href={`/catalogo/${product.slug}`} className="block overflow-hidden"><PublicImage src={product.imageUrl} alt={`Foto de ${product.name}`} className="aspect-[4/3] w-full transition duration-500 group-hover:scale-[1.03]" /></Link><div className="p-5"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[.16em] text-[var(--catalog-secondary)]">{product.categoryName}</p><Link href={`/catalogo/${product.slug}`} className="mt-1 flex items-center gap-1 font-serif text-xl font-bold text-[#29231d] hover:text-[var(--catalog-secondary)]">{product.name}<ArrowUpRight className="opacity-0 transition group-hover:opacity-100" size={15} /></Link></div><span className={`mt-1 h-2.5 w-2.5 shrink-0 rounded-full ${product.available ? "bg-emerald-600" : "bg-stone-300"}`} title={product.available ? "Disponível" : "Esgotado"} /></div><p className="mt-2 line-clamp-2 min-h-10 text-sm leading-5 text-[#756b61]">{product.shortDescription}</p><div className="mt-4 flex items-end justify-between gap-3"><div><p className="text-xs text-[#8b8177]">{product.netWeight} {product.unit}</p>{showPrice && <p className="mt-1 font-serif text-xl font-bold text-[var(--catalog-primary)]">{money.format(product.price)}</p>}</div><AddToCart productId={product.id} available={product.available} compact /></div></div></article>;
+}

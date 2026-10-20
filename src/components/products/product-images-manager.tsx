@@ -1,0 +1,17 @@
+"use client";
+/* eslint-disable react-hooks/set-state-in-effect, react-hooks/exhaustive-deps */
+
+import { ChevronLeft, ChevronRight, Loader2, Star, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getProductImageUrl, listProductImages, moveProductImage, removeProductImage, setMainProductImage, type ProductImageAdmin } from "@/services/products";
+
+export function ProductImagesManager({ productId, mainPath, onMainChange }: { productId: string; mainPath: string | null; onMainChange: (path: string | null) => void }) {
+  const [images, setImages] = useState<ProductImageAdmin[]>([]); const [loading, setLoading] = useState(true); const [error, setError] = useState<string | null>(null);
+  async function load() { setLoading(true); try { setImages(await listProductImages(productId)); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível carregar as imagens."); } finally { setLoading(false); } }
+  useEffect(() => { void load(); }, [productId]);
+  async function choose(path: string) { try { await setMainProductImage(productId, path); onMainChange(path); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível definir a imagem principal."); } }
+  async function remove(image: ProductImageAdmin) { if (!confirm("Remover esta imagem?")) return; try { const next = await removeProductImage(productId, image); if (mainPath === image.storage_path) onMainChange(next); await load(); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível remover."); } }
+  async function move(id: string, direction: -1 | 1) { try { await moveProductImage(productId, id, direction); await load(); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível reordenar."); } }
+  if (loading) return <div className="flex items-center gap-2 text-xs text-[#81776e]"><Loader2 className="animate-spin" size={15} />Carregando galeria...</div>;
+  return <div className="sm:col-span-2"><p className="mb-3 text-sm font-semibold">Galeria cadastrada</p>{error && <p className="mb-3 rounded-lg bg-red-50 p-3 text-xs text-red-700">{error}</p>}{images.length ? <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">{images.map((image, index) => <div key={image.id} className="overflow-hidden rounded-xl border bg-white"><span role="img" aria-label={image.alt_text ?? "Imagem do produto"} className="block aspect-square bg-cover bg-center" style={{ backgroundImage: `url("${getProductImageUrl(image.storage_path)}")` }} /><div className="flex justify-between p-2"><button type="button" title="Definir como principal" onClick={() => void choose(image.storage_path)} className={mainPath === image.storage_path ? "text-amber-600" : "text-stone-400"}><Star size={16} fill={mainPath === image.storage_path ? "currentColor" : "none"} /></button><div><button type="button" disabled={index === 0} onClick={() => void move(image.id, -1)} className="p-1 disabled:opacity-25"><ChevronLeft size={15} /></button><button type="button" disabled={index === images.length - 1} onClick={() => void move(image.id, 1)} className="p-1 disabled:opacity-25"><ChevronRight size={15} /></button><button type="button" onClick={() => void remove(image)} className="p-1 text-red-700"><Trash2 size={15} /></button></div></div></div>)}</div> : <p className="rounded-xl border border-dashed p-4 text-xs text-[#81776e]">Nenhuma imagem cadastrada.</p>}</div>;
+}

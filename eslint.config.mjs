@@ -11,6 +11,10 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    ".openai/**",
+    "components/**",
+    "hooks/**",
+    "src/types/database.ts",
     "next-env.d.ts",
   ]),
   {

@@ -1,12 +1,18 @@
 import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database";
+export { hasSupabaseConfig } from "@/lib/supabase/config";
 
-export function hasSupabaseConfig() {
-  return Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY && !process.env.NEXT_PUBLIC_SUPABASE_URL.includes("seu-projeto"));
-}
+let browserClient: SupabaseClient<Database> | undefined;
 
 export function createClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (!url || !key) throw new Error("Configure as variáveis públicas do Supabase.");
-  return createBrowserClient(url, key);
+
+  if (!url || !key) {
+    throw new Error("Configure as variáveis públicas do Supabase.");
+  }
+
+  browserClient ??= createBrowserClient<Database>(url, key);
+  return browserClient;
 }

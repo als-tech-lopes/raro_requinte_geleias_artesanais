@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import type { Database } from "@/types/database";
 
 export async function createClient() {
   const cookieStore = await cookies();
@@ -10,14 +11,16 @@ export async function createClient() {
     throw new Error("Configure NEXT_PUBLIC_SUPABASE_URL e NEXT_PUBLIC_SUPABASE_ANON_KEY.");
   }
 
-  return createServerClient(url, key, {
+  return createServerClient<Database>(url, key, {
     cookies: {
       getAll: () => cookieStore.getAll(),
       setAll(values) {
         try {
-          values.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+          values.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options),
+          );
         } catch {
-          // Server Components não podem gravar cookies; o middleware cuidará da renovação.
+          // Server Components não podem gravar cookies; o proxy cuida da renovação.
         }
       },
     },
