@@ -4,7 +4,7 @@ import { AlertTriangle, ChevronDown, Edit3, Leaf, Loader2, PackagePlus, Power, S
 import { useEffect, useMemo, useState } from "react";
 import { ProductForm } from "./product-form";
 import { mockProducts } from "@/services/products.mock";
-import { createProduct, deleteProduct, getProductDeletionStatus, getProductImageUrl, inactivateProduct, isDemoMode, listProducts, updateProduct, uploadProductImages } from "@/services/products";
+import { archiveProduct, createProduct, deleteProduct, getProductDeletionStatus, getProductImageUrl, isDemoMode, listProducts, updateProduct, uploadProductImages } from "@/services/products";
 import type { ProductValidated } from "@/schemas/product";
 import type { Product, ProductDeletionStatus } from "@/types/product";
 
@@ -15,16 +15,17 @@ export function ProductManager({ initialProducts = mockProducts }: { initialProd
   const [products, setProducts] = useState(initialProducts.length ? initialProducts : mockProducts);
   const [view, setView] = useState<View>({ type: "list" });
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState("todos");
+  const [status, setStatus] = useState("operacionais");
   const [notice, setNotice] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
   const [deletionStatus, setDeletionStatus] = useState<ProductDeletionStatus | null>(null);
   const [deletionError, setDeletionError] = useState<string | null>(null);
   const [deletionBusy, setDeletionBusy] = useState(false);
-  const filtered = useMemo(() => products.filter(p => (status === "todos" || p.status === status) && `${p.name} ${p.category}`.toLowerCase().includes(query.toLowerCase())), [products, query, status]);
-  const stockValue = products.reduce((sum, p) => sum + p.sale_price * p.stock_quantity, 0);
-  const lowStock = products.filter(p => p.stock_quantity <= 5).length;
+  const operationalProducts = useMemo(() => products.filter(product => product.status !== "inativo"), [products]);
+  const filtered = useMemo(() => products.filter(p => (status === "todos" || (status === "operacionais" ? p.status !== "inativo" : p.status === status)) && `${p.name} ${p.category}`.toLowerCase().includes(query.toLowerCase())), [products, query, status]);
+  const stockValue = operationalProducts.reduce((sum, p) => sum + p.sale_price * p.stock_quantity, 0);
+  const lowStock = operationalProducts.filter(p => p.stock_quantity <= 5).length;
 
   useEffect(() => {
     if (isDemoMode()) return;
@@ -114,18 +115,18 @@ export function ProductManager({ initialProducts = mockProducts }: { initialProd
     setTimeout(() => setNotice(null), 3200);
   }
 
-  async function inactivate() {
+  async function archive() {
     if (!deleteTarget) return;
     setDeletionBusy(true);
     setDeletionError(null);
     try {
-      const updated = isDemoMode() ? { ...deleteTarget, status: "inativo" as const, updated_at: new Date().toISOString() } : await inactivateProduct(deleteTarget.id);
+      const updated = isDemoMode() ? { ...deleteTarget, status: "inativo" as const, published: false, featured: false, updated_at: new Date().toISOString() } : await archiveProduct(deleteTarget.id);
       setProducts(items => items.map(product => product.id === updated.id ? updated : product));
-      setNotice("Produto inativado. O histórico foi preservado.");
+      setNotice("Produto arquivado. Vendas, produções e relatórios foram preservados.");
       setDeleteTarget(null);
       setDeletionStatus(null);
     } catch (error) {
-      setDeletionError(error instanceof Error ? error.message : "Não foi possível inativar o produto.");
+      setDeletionError(error instanceof Error ? error.message : "Não foi possível arquivar o produto.");
     } finally {
       setDeletionBusy(false);
     }
@@ -136,12 +137,12 @@ export function ProductManager({ initialProducts = mockProducts }: { initialProd
 
   return <div className="animate-rise mx-auto max-w-[1320px]">
     {notice && <div role="status" className="fixed right-5 top-20 z-50 rounded-xl bg-[#2c4637] px-4 py-3 text-sm font-semibold text-white shadow-xl">{notice}</div>}
-    {deleteTarget && <DeletionDialog product={deleteTarget} status={deletionStatus} error={deletionError} busy={deletionBusy} onClose={closeDeletion} onDelete={removePermanently} onInactivate={inactivate} />}
+    {deleteTarget && <DeletionDialog product={deleteTarget} status={deletionStatus} error={deletionError} busy={deletionBusy} onClose={closeDeletion} onDelete={removePermanently} onArchive={archive} />}
     <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[.18em] text-[#9c2348]"><Leaf size={14} />Catálogo e estoque</div><h1 className="font-serif text-4xl leading-none sm:text-5xl">Produtos</h1><p className="mt-3 max-w-xl text-sm leading-6 text-[#776e65]">Organize os sabores, preços e disponibilidade da sua produção artesanal.</p></div><button onClick={() => { setFormError(null); setView({ type: "create" }); }} className="flex items-center justify-center gap-2 rounded-xl bg-[#9c2348] px-5 py-3 text-sm font-bold text-white shadow-[0_8px_20px_rgba(156,35,72,.22)] hover:bg-[#7e1938]"><PackagePlus size={18} />Novo produto</button></div>
     {isDemoMode() && <div className="mt-6 flex items-start gap-3 rounded-2xl border border-[#ddc898] bg-[#fff7df] p-4 text-sm text-[#66552b]"><Sparkles className="mt-0.5 shrink-0" size={18} /><div><strong>Modo demonstração</strong><p className="mt-0.5 text-xs leading-5 opacity-80">As alterações ficam nesta sessão. Configure o arquivo .env.local para conectar ao Supabase.</p></div></div>}
-    <div className="mt-7 grid gap-4 sm:grid-cols-3"><Metric label="Produtos cadastrados" value={String(products.length).padStart(2, "0")} note={`${products.filter(p => p.published && p.status === "ativo").length} publicados no catálogo`} /><Metric label="Valor em estoque" value={money.format(stockValue)} note="Pelo preço atual de venda" /><Metric label="Atenção ao estoque" value={String(lowStock).padStart(2, "0")} note="Com 5 unidades ou menos" warn={lowStock > 0} /></div>
+    <div className="mt-7 grid gap-4 sm:grid-cols-3"><Metric label="Produtos em uso" value={String(operationalProducts.length).padStart(2, "0")} note={`${products.filter(p => p.published && p.status === "ativo").length} publicados no catálogo`} /><Metric label="Valor em estoque" value={money.format(stockValue)} note="Desconsidera produtos arquivados" /><Metric label="Atenção ao estoque" value={String(lowStock).padStart(2, "0")} note="Produtos em uso com 5 unidades ou menos" warn={lowStock > 0} /></div>
     <section className="mt-6 overflow-hidden rounded-[20px] border border-[#e4d8c7] bg-[#fffdf8] shadow-[0_12px_35px_rgba(62,43,29,.06)]">
-      <div className="flex flex-col gap-3 border-b border-[#eadfce] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"><div className="relative max-w-md flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#948a7f]" size={17} /><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar por nome ou categoria..." className="w-full rounded-xl border border-[#ded2c1] bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:border-[#9c2348]" /></div><div className="relative"><select value={status} onChange={e => setStatus(e.target.value)} className="appearance-none rounded-xl border border-[#ded2c1] bg-white py-2.5 pl-4 pr-10 text-sm font-medium outline-none"><option value="todos">Todos os status</option><option value="ativo">Ativos</option><option value="inativo">Inativos</option><option value="esgotado">Esgotados</option></select><ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" size={16} /></div></div>
+      <div className="flex flex-col gap-3 border-b border-[#eadfce] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5"><div className="relative max-w-md flex-1"><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#948a7f]" size={17} /><input value={query} onChange={e => setQuery(e.target.value)} placeholder="Buscar por nome ou categoria..." className="w-full rounded-xl border border-[#ded2c1] bg-white py-2.5 pl-10 pr-4 text-sm outline-none focus:border-[#9c2348]" /></div><div className="relative"><select value={status} onChange={e => setStatus(e.target.value)} className="appearance-none rounded-xl border border-[#ded2c1] bg-white py-2.5 pl-4 pr-10 text-sm font-medium outline-none"><option value="operacionais">Produtos em uso</option><option value="ativo">Ativos</option><option value="esgotado">Esgotados</option><option value="inativo">Arquivados</option><option value="todos">Todos os status</option></select><ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2" size={16} /></div></div>
       <div className="hidden grid-cols-[2.1fr_.8fr_.65fr_.7fr_.7fr_72px] gap-4 border-b border-[#eadfce] bg-[#faf5eb] px-5 py-3 text-[10px] font-bold uppercase tracking-[.14em] text-[#8b8177] md:grid"><span>Produto</span><span>Categoria</span><span>Preço</span><span>Estoque</span><span>Status</span><span /></div>
       <div className="divide-y divide-[#eee4d5]">{filtered.map((product, index) => <ProductRow key={product.id} product={product} index={index} onEdit={() => setView({ type: "edit", product })} onDelete={() => inspectDeletion(product)} />)}{filtered.length === 0 && <div className="p-12 text-center text-sm text-[#81776e]">Nenhum produto encontrado com esses filtros.</div>}</div>
       <div className="flex items-center justify-between border-t border-[#eadfce] px-5 py-3 text-xs text-[#81776e]"><span>Exibindo {filtered.length} de {products.length} produtos</span><span>Página 1 de 1</span></div>
@@ -149,7 +150,7 @@ export function ProductManager({ initialProducts = mockProducts }: { initialProd
   </div>;
 }
 
-function DeletionDialog({ product, status, error, busy, onClose, onDelete, onInactivate }: { product: Product; status: ProductDeletionStatus | null; error: string | null; busy: boolean; onClose: () => void; onDelete: () => void; onInactivate: () => void }) {
+function DeletionDialog({ product, status, error, busy, onClose, onDelete, onArchive }: { product: Product; status: ProductDeletionStatus | null; error: string | null; busy: boolean; onClose: () => void; onDelete: () => void; onArchive: () => void }) {
   const references = status ? [
     ["Receitas", status.references.recipes],
     ["Produções", status.references.productions],
@@ -166,11 +167,11 @@ function DeletionDialog({ product, status, error, busy, onClose, onDelete, onIna
       {!status && !error && <div className="mt-7 flex items-center gap-3 rounded-xl bg-[#f7f1e5] p-4 text-sm text-[#6f665d]"><Loader2 className="animate-spin" size={18} />Verificando vínculos do produto...</div>}
       {error && <div role="alert" className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-700">{error}</div>}
 
-      {status?.canDelete && <div className="mt-6"><p className="text-sm leading-6 text-[#665e57]">Este produto não possui receitas, produções, vendas ou movimentações vinculadas. Você pode inativá-lo para mantê-lo no cadastro ou excluí-lo permanentemente.</p><p className="mt-3 rounded-xl bg-red-50 p-3 text-xs leading-5 text-red-700">A exclusão remove também os registros de imagens e não poderá ser desfeita.</p></div>}
+      {status?.canDelete && <div className="mt-6"><p className="text-sm leading-6 text-[#665e57]">Este produto não possui receitas, produções, vendas ou movimentações vinculadas. Você pode arquivá-lo com segurança ou excluí-lo permanentemente.</p><p className="mt-3 rounded-xl bg-[#eef5ee] p-3 text-xs leading-5 text-[#34603c]"><strong>Arquivar</strong> retira o produto da operação e do catálogo, mas mantém seu cadastro e não altera relatórios.</p><p className="mt-3 rounded-xl bg-red-50 p-3 text-xs leading-5 text-red-700">A exclusão definitiva remove também os registros de imagens e não poderá ser desfeita.</p></div>}
 
-      {status && !status.canDelete && <div className="mt-6"><p className="text-sm leading-6 text-[#665e57]">A exclusão foi bloqueada porque este produto possui histórico relacionado:</p><ul className="mt-4 space-y-2">{references.map(([label, count]) => <li key={String(label)} className="flex items-center justify-between rounded-xl bg-[#f7f1e5] px-4 py-2.5 text-sm"><span>{label}</span><strong>{count}</strong></li>)}</ul><p className="mt-4 text-sm leading-6 text-[#665e57]">{product.status === "inativo" ? "O produto já está inativo e seu histórico permanece preservado." : "Você pode inativá-lo para removê-lo do catálogo e marcá-lo como fora de uso, preservando todo o histórico."}</p></div>}
+      {status && !status.canDelete && <div className="mt-6"><p className="text-sm leading-6 text-[#665e57]">A exclusão definitiva foi bloqueada porque este produto possui histórico relacionado:</p><ul className="mt-4 space-y-2">{references.map(([label, count]) => <li key={String(label)} className="flex items-center justify-between rounded-xl bg-[#f7f1e5] px-4 py-2.5 text-sm"><span>{label}</span><strong>{count}</strong></li>)}</ul><p className="mt-4 text-sm leading-6 text-[#665e57]">{product.status === "inativo" ? "O produto já está arquivado e seu histórico permanece preservado." : "Arquive o produto para retirá-lo da operação e do catálogo sem alterar vendas, produções ou relatórios anteriores."}</p></div>}
 
-      <div className="mt-7 flex flex-col-reverse gap-3 border-t border-[#eadfce] pt-5 sm:flex-row sm:justify-end"><button type="button" disabled={busy} onClick={onClose} className="rounded-xl border border-[#d8cbb9] px-5 py-2.5 text-sm font-semibold disabled:opacity-50">Cancelar</button>{status && product.status !== "inativo" && <button type="button" disabled={busy} onClick={onInactivate} className="flex items-center justify-center gap-2 rounded-xl bg-[#9c2348] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#7e1938] disabled:opacity-60">{busy ? <Loader2 className="animate-spin" size={17} /> : <Power size={17} />}Inativar produto</button>}{status?.canDelete && <button type="button" disabled={busy} onClick={onDelete} className="flex items-center justify-center gap-2 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-red-800 disabled:opacity-60">{busy ? <Loader2 className="animate-spin" size={17} /> : <Trash2 size={17} />}Excluir definitivamente</button>}</div>
+      <div className="mt-7 flex flex-col-reverse gap-3 border-t border-[#eadfce] pt-5 sm:flex-row sm:justify-end"><button type="button" disabled={busy} onClick={onClose} className="rounded-xl border border-[#d8cbb9] px-5 py-2.5 text-sm font-semibold disabled:opacity-50">Cancelar</button>{status && product.status !== "inativo" && <button type="button" disabled={busy} onClick={onArchive} className="flex items-center justify-center gap-2 rounded-xl bg-[#9c2348] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#7e1938] disabled:opacity-60">{busy ? <Loader2 className="animate-spin" size={17} /> : <Power size={17} />}Arquivar sem afetar relatórios</button>}{status?.canDelete && <button type="button" disabled={busy} onClick={onDelete} className="flex items-center justify-center gap-2 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-red-800 disabled:opacity-60">{busy ? <Loader2 className="animate-spin" size={17} /> : <Trash2 size={17} />}Excluir definitivamente</button>}</div>
     </section>
   </div>;
 }

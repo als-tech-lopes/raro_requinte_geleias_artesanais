@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RR Geleias Artesanais — Apresentação institucional</title>
+  <style>
+    :root { --vinho:#8f2048; --vinho-escuro:#59152f; --verde:#315c3e; --creme:#fbf4e8; --papel:#fffdf8; --texto:#2c2925; --muted:#736b62; --linha:#e5d8c6; }
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { margin:0; background:#171713; color:var(--texto); font-family:Inter,Segoe UI,Arial,sans-serif; }
+    .deck { display:grid; gap:32px; padding:32px; }
+    .slide { position:relative; width:min(1280px,calc(100vw - 64px)); aspect-ratio:16/9; margin:auto; overflow:hidden; background:var(--papel); box-shadow:0 24px 80px #0008; page-break-after:always; }
+    .pad { padding:70px 78px; height:100%; }
+    .eyebrow { margin:0 0 14px; color:var(--vinho); font-size:15px; font-weight:800; letter-spacing:.18em; text-transform:uppercase; }
+    h1,h2,h3,p { margin-top:0; }
+    h1,h2 { font-family:Georgia,Times New Roman,serif; line-height:.98; }
+    h1 { max-width:850px; font-size:72px; }
+    h2 { max-width:900px; font-size:55px; }
+    h3 { font-size:22px; }
+    .lead { max-width:760px; color:var(--muted); font-size:24px; line-height:1.45; }
+    .brand { position:absolute; right:38px; top:30px; z-index:3; font-weight:900; color:var(--vinho); letter-spacing:.08em; }
+    .number { position:absolute; right:38px; bottom:28px; color:#8b8379; font-size:13px; }
+    .cover { color:white; background:linear-gradient(120deg,#51132c 0 46%,transparent 70%),url('assets/depois-gestao-digital.png') center/cover; }
+    .cover .pad { display:flex; flex-direction:column; justify-content:center; }
+    .cover h1 { max-width:670px; font-size:76px; }
+    .cover .lead,.cover .eyebrow { color:#fff4e5; }
+    .pill { display:inline-block; width:max-content; padding:10px 16px; border:1px solid #ffffff55; border-radius:999px; font-size:14px; font-weight:700; }
+    .photo-copy { display:grid; grid-template-columns:58% 42%; height:100%; }
+    .photo-copy.reverse { grid-template-columns:42% 58%; }
+    .photo { min-width:0; background-position:center; background-size:cover; }
+    .copy { display:flex; flex-direction:column; justify-content:center; padding:66px 58px; background:var(--papel); }
+    .copy h2 { font-size:49px; }
+    .pain-list,.check-list { display:grid; gap:15px; padding:0; list-style:none; font-size:20px; line-height:1.3; }
+    .pain-list li,.check-list li { position:relative; padding-left:38px; }
+    .pain-list li::before { content:'×'; position:absolute; left:0; color:var(--vinho); font-size:30px; font-weight:900; line-height:.8; }
+    .check-list li::before { content:'✓'; position:absolute; left:0; color:var(--verde); font-size:22px; font-weight:900; }
+    .cards { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:40px; }
+    .card { min-height:205px; padding:28px; border:1px solid var(--linha); border-radius:24px; background:white; box-shadow:0 12px 34px #3d26120d; }
+    .card .icon { display:grid; place-items:center; width:48px; height:48px; margin-bottom:22px; border-radius:14px; color:white; background:var(--vinho); font-weight:900; }
+    .card p { color:var(--muted); line-height:1.45; }
+    .soft { background:var(--creme); }
+    .modules { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:34px; }
+    .module { padding:24px 18px; border-radius:20px; color:white; background:var(--verde); }
+    .module:nth-child(even) { background:var(--vinho); }
+    .module strong { display:block; margin-bottom:8px; font-size:20px; }
+    .module span { color:#ffffffcf; font-size:15px; line-height:1.35; }
+    .flow { display:flex; align-items:center; justify-content:center; gap:10px; margin-top:28px; color:var(--muted); font-weight:800; }
+    .flow b { padding:12px 16px; border:1px solid var(--linha); border-radius:999px; background:white; }
+    .split { display:grid; grid-template-columns:1fr 1fr; height:100%; }
+    .half { position:relative; display:flex; align-items:flex-end; padding:54px; color:white; background-size:cover; background-position:center; }
+    .half::after { content:''; position:absolute; inset:0; background:linear-gradient(0deg,#171713d9,transparent 70%); }
+    .half > div { position:relative; z-index:1; }
+    .half h3 { margin-bottom:8px; font-family:Georgia,serif; font-size:34px; }
+    .half p { max-width:420px; margin:0; color:#fffde8; font-size:18px; line-height:1.4; }
+    .benefits { display:grid; grid-template-columns:repeat(2,1fr); gap:20px; margin-top:34px; }
+    .benefit { display:flex; gap:18px; padding:22px; border:1px solid var(--linha); border-radius:20px; background:white; }
+    .benefit b { color:var(--vinho); font-size:28px; }
+    .benefit span { color:var(--muted); line-height:1.4; }
+    .closing { color:white; background:radial-gradient(circle at 85% 20%,#9c2348 0,transparent 34%),linear-gradient(135deg,#244a32,#12271b); }
+    .closing .pad { display:flex; flex-direction:column; justify-content:center; }
+    .closing h2 { font-size:67px; }
+    .closing .lead { color:#eef6e9; }
+    .cta { display:inline-block; width:max-content; margin-top:16px; padding:16px 24px; border-radius:14px; color:var(--vinho-escuro); background:#fff3df; font-weight:900; }
+    .controls { position:fixed; right:18px; bottom:18px; z-index:20; display:flex; gap:8px; padding:8px; border-radius:999px; background:#000b; }
+    .controls button { width:42px; height:42px; border:0; border-radius:50%; cursor:pointer; color:white; background:#ffffff22; font-size:20px; }
+    @media (max-width:800px) { .deck{padding:10px;gap:12px}.slide{width:calc(100vw - 20px)}.pad{padding:5.2vw}.brand{font-size:10px;right:3vw;top:2vw}.eyebrow{font-size:1.3vw}h1,.cover h1{font-size:5.6vw}h2,.copy h2{font-size:4.2vw}.lead{font-size:1.8vw}.copy{padding:4vw}.pain-list,.check-list{font-size:1.55vw;gap:1.2vw}.cards{gap:1.4vw;margin-top:2vw}.card{min-height:0;padding:2vw;border-radius:1.5vw}.card .icon{width:3.8vw;height:3.8vw;margin-bottom:1.2vw}.card h3{font-size:1.7vw}.card p{font-size:1.2vw}.modules{gap:1vw;margin-top:2vw}.module{padding:1.6vw}.module strong{font-size:1.5vw}.module span{font-size:1.1vw}.flow{font-size:1vw}.half{padding:4vw}.half h3{font-size:2.6vw}.half p{font-size:1.4vw}.benefits{gap:1.3vw;margin-top:2vw}.benefit{padding:1.5vw}.benefit h3{font-size:1.5vw}.benefit span{font-size:1.1vw}.closing h2{font-size:5vw}.cta{font-size:1.4vw;padding:1.2vw 1.8vw}.number{font-size:1vw}.controls{display:none} }
+    @media print { @page{size:landscape;margin:0} body{background:white}.deck{display:block;padding:0}.slide{width:100vw;height:100vh;margin:0;box-shadow:none}.controls{display:none} }
+  </style>
+</head>
+<body>
+  <main class="deck">
+    <section class="slide cover" id="slide-1">
+      <div class="pad"><p class="eyebrow">RR Geleias Artesanais</p><h1>Da receita ao resultado, tudo sob controle.</h1><p class="lead">Um sistema criado para simplificar a gestão de uma produção artesanal sem perder o cuidado que torna cada pote especial.</p><span class="pill">Gestão • Produção • Estoque • Vendas</span></div><span class="number">01</span>
+    </section>
+
+    <section class="slide" id="slide-2">
+      <span class="brand">RR GELEIAS</span><div class="photo-copy"><div class="photo" style="background-image:url('assets/antes-controle-manual.png')"></div><div class="copy"><p class="eyebrow">Antes</p><h2>Quando tudo depende de papel e memória</h2><ul class="pain-list"><li>Pedidos espalhados em anotações</li><li>Estoque difícil de conferir</li><li>Custos e receitas sem histórico confiável</li><li>Retrabalho para saber o que produzir</li></ul></div></div><span class="number">02</span>
+    </section>
+
+    <section class="slide soft" id="slide-3">
+      <span class="brand">RR GELEIAS</span><div class="pad"><p class="eyebrow">A dor real</p><h2>O crescimento aumenta a complexidade — e o improviso começa a custar caro.</h2><div class="cards"><article class="card"><span class="icon">01</span><h3>Informação fragmentada</h3><p>Cadernos, mensagens e planilhas contam versões diferentes da mesma operação.</p></article><article class="card"><span class="icon">02</span><h3>Decisão no escuro</h3><p>Sem visão clara de estoque, validade, custo e vendas, cada decisão leva mais tempo.</p></article><article class="card"><span class="icon">03</span><h3>Tempo longe da produção</h3><p>Horas gastas conferindo dados poderiam estar criando, vendendo e atendendo clientes.</p></article></div></div><span class="number">03</span>
+    </section>
+
+    <section class="slide" id="slide-4">
+      <span class="brand">RR GELEIAS</span><div class="pad"><p class="eyebrow">A solução</p><h2>Uma visão única para cuidar de toda a operação.</h2><p class="lead">O sistema conecta o que entra, o que é produzido, o que está disponível e o que foi vendido.</p><div class="modules"><div class="module"><strong>Ingredientes</strong><span>Compras, custos e saldo de matéria-prima.</span></div><div class="module"><strong>Receitas</strong><span>Fichas técnicas e consumo previsto.</span></div><div class="module"><strong>Produção</strong><span>Lotes, validade, perdas e rendimento.</span></div><div class="module"><strong>Produtos</strong><span>Preço, imagens, estoque e publicação.</span></div><div class="module"><strong>Vendas</strong><span>Pedidos, pagamentos e histórico.</span></div><div class="module"><strong>Clientes</strong><span>Cadastro e relacionamento organizado.</span></div><div class="module"><strong>Catálogo</strong><span>Vitrine pública integrada ao estoque.</span></div><div class="module"><strong>Dashboard</strong><span>Indicadores para decisões mais rápidas.</span></div></div><div class="flow"><b>Compra</b> → <b>Receita</b> → <b>Produção</b> → <b>Venda</b> → <b>Decisão</b></div></div><span class="number">04</span>
+    </section>
+
+    <section class="slide" id="slide-5">
+      <div class="split"><div class="half" style="background-image:url('assets/antes-controle-manual.png')"><div><p class="eyebrow" style="color:#ffd8e6">ANTES</p><h3>Procurar, conferir, refazer</h3><p>A operação depende de lembranças e verificações manuais.</p></div></div><div class="half" style="background-image:url('assets/depois-gestao-digital.png')"><div><p class="eyebrow" style="color:#d9f4df">AGORA</p><h3>Visualizar, decidir, avançar</h3><p>As informações importantes ficam disponíveis em um só fluxo.</p></div></div></div><span class="number">05</span>
+    </section>
+
+    <section class="slide soft" id="slide-6">
+      <span class="brand">RR GELEIAS</span><div class="pad"><p class="eyebrow">Facilidade no dia a dia</p><h2>Menos operação manual. Mais tempo para o que gera valor.</h2><div class="benefits"><div class="benefit"><b>✓</b><div><h3>Estoque acompanhado</h3><span>Entradas, consumos, ajustes e disponibilidade conectados.</span></div></div><div class="benefit"><b>✓</b><div><h3>Produção rastreável</h3><span>Lotes e validades organizados do preparo à venda.</span></div></div><div class="benefit"><b>✓</b><div><h3>Venda mais segura</h3><span>Produtos, quantidades e pagamentos registrados no mesmo lugar.</span></div></div><div class="benefit"><b>✓</b><div><h3>Catálogo sempre coerente</h3><span>A vitrine pública reflete os produtos preparados para venda.</span></div></div></div></div><span class="number">06</span>
+    </section>
+
+    <section class="slide" id="slide-7">
+      <span class="brand">RR GELEIAS</span><div class="photo-copy reverse"><div class="copy"><p class="eyebrow">Resultado</p><h2>Controle sem perder a essência artesanal.</h2><ul class="check-list"><li>Rotina mais clara para quem produz</li><li>Dados confiáveis para decidir</li><li>Histórico preservado para crescer</li><li>Experiência mais profissional para o cliente</li></ul></div><div class="photo" style="background-image:url('assets/depois-gestao-digital.png')"></div></div><span class="number">07</span>
+    </section>
+
+    <section class="slide closing" id="slide-8">
+      <div class="pad"><p class="eyebrow" style="color:#f2cfdb">RR Geleias Artesanais</p><h2>Produzir com carinho.<br>Gerir com clareza.</h2><p class="lead">Uma base simples e segura para transformar organização em crescimento.</p><span class="cta">Conheça o sistema</span></div><span class="number">08</span>
+    </section>
+  </main>
+  <nav class="controls" aria-label="Navegação"><button type="button" onclick="move(-1)" aria-label="Slide anterior">‹</button><button type="button" onclick="move(1)" aria-label="Próximo slide">›</button></nav>
+  <script>let current=0;const slides=[...document.querySelectorAll('.slide')];function move(step){current=Math.max(0,Math.min(slides.length-1,current+step));slides[current].scrollIntoView({behavior:'smooth',block:'center'})}addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key))move(1);if(['ArrowLeft','PageUp'].includes(e.key))move(-1)})</script>
+</body>
+</html>

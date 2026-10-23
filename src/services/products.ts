@@ -155,15 +155,15 @@ export async function getProductDeletionStatus(id: string): Promise<ProductDelet
   };
 }
 
-export async function inactivateProduct(id: string): Promise<Product> {
+export async function archiveProduct(id: string): Promise<Product> {
   const { data, error } = await createClient()
     .from("produtos")
-    .update({ status: "INATIVO" })
+    .update({ status: "INATIVO", publicado: false, destaque: false })
     .eq("id", id)
     .select("*, categorias_produtos(nome)")
     .single();
 
-  if (error) throw new Error(`Não foi possível inativar o produto: ${error.message}`);
+  if (error) throw new Error(`Não foi possível arquivar o produto: ${error.message}`);
   return toProduct(data as ProductRow);
 }
 
