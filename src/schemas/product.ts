@@ -6,7 +6,7 @@ const numberField = (label: string) =>
 export const productSchema = z.object({
   name: z.string().trim().min(3, "Informe ao menos 3 caracteres.").max(120).transform(value => value.replace(/\s+/g, " ")),
   slug: z.string().trim().min(3, "Informe o endereço do produto.").regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use letras minúsculas, números e hífens."),
-  short_description: z.string().trim().min(10, "Descreva o produto em ao menos 10 caracteres.").max(180),
+  short_description: z.string().trim().max(180, "A descrição curta deve ter no máximo 180 caracteres."),
   description: z.string().trim().max(3000).nullable().default(null),
   category: z.string().trim().min(2, "Informe a categoria.").max(80),
   net_weight: numberField("Peso").positive("O peso deve ser maior que zero."),

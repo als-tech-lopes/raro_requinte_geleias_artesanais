@@ -5,9 +5,9 @@ import { ChevronLeft, ChevronRight, Loader2, Star, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getProductImageUrl, listProductImages, moveProductImage, removeProductImage, setMainProductImage, type ProductImageAdmin } from "@/services/products";
 
-export function ProductImagesManager({ productId, mainPath, onMainChange }: { productId: string; mainPath: string | null; onMainChange: (path: string | null) => void }) {
+export function ProductImagesManager({ productId, mainPath, onMainChange, onCountChange }: { productId: string; mainPath: string | null; onMainChange: (path: string | null) => void; onCountChange?: (count: number) => void }) {
   const [images, setImages] = useState<ProductImageAdmin[]>([]); const [loading, setLoading] = useState(true); const [error, setError] = useState<string | null>(null);
-  async function load() { setLoading(true); try { setImages(await listProductImages(productId)); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível carregar as imagens."); } finally { setLoading(false); } }
+  async function load() { setLoading(true); try { const loaded = await listProductImages(productId); setImages(loaded); onCountChange?.(loaded.length); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível carregar as imagens."); } finally { setLoading(false); } }
   useEffect(() => { void load(); }, [productId]);
   async function choose(path: string) { try { await setMainProductImage(productId, path); onMainChange(path); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível definir a imagem principal."); } }
   async function remove(image: ProductImageAdmin) { if (!confirm("Remover esta imagem?")) return; try { const next = await removeProductImage(productId, image); if (mainPath === image.storage_path) onMainChange(next); await load(); } catch (reason) { setError(reason instanceof Error ? reason.message : "Não foi possível remover."); } }

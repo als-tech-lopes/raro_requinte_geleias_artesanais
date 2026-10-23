@@ -195,12 +195,13 @@ export async function deleteProduct(id: string): Promise<{ warning?: string }> {
 export async function uploadProductImages(productId: string, files: File[]) {
   const supabase = createClient();
   const uploaded: string[] = [];
-  if (files.length > 8) throw new Error("Envie no máximo 8 imagens por vez.");
+  if (files.length > 2) throw new Error("Cada produto pode ter no máximo 2 imagens.");
   const [{ data: existing, error: existingError }, { data: product, error: productError }] = await Promise.all([
-    supabase.from("produto_imagens").select("ordem").eq("produto_id", productId).order("ordem", { ascending: false }).limit(1),
+    supabase.from("produto_imagens").select("ordem").eq("produto_id", productId).order("ordem", { ascending: false }),
     supabase.from("produtos").select("imagem_principal_path").eq("id", productId).single(),
   ]);
   if (existingError || productError) throw new Error(existingError?.message ?? productError?.message);
+  if ((existing?.length ?? 0) + files.length > 2) throw new Error(`Este produto já possui ${existing?.length ?? 0} imagem(ns). O limite total é 2.`);
   const firstOrder = (existing?.[0]?.ordem ?? -1) + 1;
   for (const file of files) {
     if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) throw new Error(`O arquivo ${file.name} não possui um formato permitido.`);

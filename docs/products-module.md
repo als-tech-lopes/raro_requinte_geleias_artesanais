@@ -10,11 +10,13 @@
 - `updated_at` é atualizado por trigger.
 - A opção **Arquivar sem afetar relatórios** muda o produto para inativo, remove sua publicação e destaque, mas preserva o cadastro e todos os vínculos históricos.
 - A exclusão definitiva só é permitida quando o produto não possui receitas, produções, vendas ou movimentações de estoque vinculadas.
+- O endereço do catálogo (`slug`) é gerado automaticamente a partir do nome; a descrição curta é opcional.
+- Cada produto pode possuir no máximo duas imagens.
 
 ## Ativação do Supabase
 
 1. Crie um projeto no Supabase.
-2. Execute a migration `supabase/migrations/202610170001_products.sql`.
+2. Execute as migrations da pasta `supabase/migrations` na ordem dos nomes dos arquivos.
 3. Crie `.env.local` a partir de `.env.example`.
 4. Cadastre o primeiro usuário no Supabase Auth.
 5. Insira o UUID desse usuário em `public.admin_users` pelo SQL Editor.
