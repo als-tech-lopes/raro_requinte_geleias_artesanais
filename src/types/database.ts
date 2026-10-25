@@ -65,6 +65,8 @@ export type Database = {
           id: string
           nome: string
           observacoes: string | null
+          origem: string | null
+          rede_social: string | null
           telefone: string | null
           updated_at: string
           whatsapp: string | null
@@ -80,6 +82,8 @@ export type Database = {
           id?: string
           nome: string
           observacoes?: string | null
+          origem?: string | null
+          rede_social?: string | null
           telefone?: string | null
           updated_at?: string
           whatsapp?: string | null
@@ -95,6 +99,8 @@ export type Database = {
           id?: string
           nome?: string
           observacoes?: string | null
+          origem?: string | null
+          rede_social?: string | null
           telefone?: string | null
           updated_at?: string
           whatsapp?: string | null
