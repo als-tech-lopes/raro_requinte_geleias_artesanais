@@ -12,6 +12,7 @@ import { PublicImage } from "./public-image";
 const links = [
   { href: "/", label: "Início" },
   { href: "/catalogo", label: "Produtos" },
+  { href: "/galeria", label: "Galeria" },
   { href: "/sobre", label: "Sobre nós" },
   { href: "/depoimentos", label: "Depoimentos" },
   { href: "/contato", label: "Contato" },
@@ -94,7 +95,7 @@ export function PublicShell({ settings, adminName, children }: PublicShellProps)
       <footer className="mt-20 bg-[#24382d] text-white">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 md:grid-cols-[1.2fr_.8fr_.8fr]">
           <div><p className="font-serif text-2xl font-bold">{settings.businessName}</p><p className="mt-3 max-w-md text-sm leading-6 text-white/65">{settings.shortDescription}</p></div>
-          <div><p className="text-xs font-bold uppercase tracking-[.16em] text-[#dec7a1]">Navegue</p><div className="mt-4 grid gap-2 text-sm text-white/70"><Link href="/catalogo">Nossas geleias</Link><Link href="/sobre">Nossa história</Link><Link href="/contato">Contato</Link><Link href={accountHref}>{accountLabel}</Link></div></div>
+          <div><p className="text-xs font-bold uppercase tracking-[.16em] text-[#dec7a1]">Navegue</p><div className="mt-4 grid gap-2 text-sm text-white/70"><Link href="/catalogo">Nossas geleias</Link><Link href="/galeria">Galeria</Link><Link href="/sobre">Nossa história</Link><Link href="/contato">Contato</Link><Link href={accountHref}>{accountLabel}</Link></div></div>
           <div><p className="text-xs font-bold uppercase tracking-[.16em] text-[#dec7a1]">Onde estamos</p><p className="mt-4 text-sm text-white/70">{[settings.city, settings.state].filter(Boolean).join(" — ") || "Consulte nossa área de atendimento"}</p>{instagram && <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-bold"><Instagram size={17} />@{instagram}</a>}</div>
         </div>
         <div className="border-t border-white/10 py-4 text-center text-xs text-white/45">Produtos artesanais. Disponibilidade e entrega sujeitas à confirmação.</div>
