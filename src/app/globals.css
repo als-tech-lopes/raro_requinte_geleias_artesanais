@@ -3,8 +3,9 @@
 
 :root { --cream: #f7f1e5; --paper: #fffdf8; --ink: #28231e; --berry: #9c2348; --berry-dark: #701532; --leaf: #3f684e; --line: #e7dccb; }
 * { box-sizing: border-box; }
-html { background: var(--cream); }
-body { margin: 0; background: radial-gradient(circle at 78% 0%, rgba(232, 190, 153, .2), transparent 28rem), var(--cream); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+html { min-width: 320px; overflow-x: hidden; background: var(--cream); }
+body { min-width: 320px; margin: 0; overflow-x: hidden; background: radial-gradient(circle at 78% 0%, rgba(232, 190, 153, .2), transparent 28rem), var(--cream); color: var(--ink); font-family: Arial, Helvetica, sans-serif; }
+img, svg, video, canvas { max-width: 100%; }
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 ::selection { background: #e9b9c7; color: var(--berry-dark); }
@@ -13,6 +14,39 @@ button { cursor: pointer; }
 .catalog-public { overflow-x: clip; background: #f7f1e5; }
 .catalog-public .font-serif { font-family: Georgia, "Times New Roman", serif; letter-spacing: -.015em; }
 .catalog-public a, .catalog-public button { -webkit-tap-highlight-color: transparent; }
+
+/* Shared responsive guardrails for public pages and the administration area. */
+.page-shell { width: 100%; max-width: 80rem; margin-inline: auto; padding-inline: clamp(1rem, 3vw, 2rem); }
+.admin-content { width: 100%; min-width: 0; }
+.admin-content > * { width: 100%; }
+.admin-shell input, .admin-shell select, .admin-shell textarea { min-width: 0; max-width: 100%; }
+.admin-shell .grid > *, .catalog-public .grid > * { min-width: 0; }
+.sale-print { max-width: 100%; }
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  .admin-shell div.hidden[class*="md:grid"][class*="grid-cols-"] { display: none !important; }
+  .admin-shell article[class*="md:grid-cols-"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    margin: .75rem !important;
+    border: 1px solid #eadfce !important;
+    border-radius: .75rem !important;
+    padding: 1rem !important;
+  }
+}
+
+@media (max-width: 639px) {
+  input, select, textarea { font-size: 16px; }
+  .catalog-public h1 { overflow-wrap: anywhere; }
+  .catalog-public footer { margin-top: 3.5rem; }
+  .admin-shell h1 { font-size: 2.25rem; line-height: 1.08; overflow-wrap: anywhere; }
+  .admin-shell h2 { overflow-wrap: anywhere; }
+  .admin-shell section[class*="rounded-[20px]"],
+  .admin-shell form[class*="rounded-[20px]"] { padding: 1rem; }
+  .admin-shell .grid[class*="grid-cols-"] { grid-template-columns: minmax(0, 1fr) !important; }
+  .sale-print { overflow-x: auto; }
+  .sale-print table { min-width: 36rem; }
+  [role="dialog"] { max-height: calc(100dvh - 2rem); overflow-y: auto; overscroll-behavior: contain; }
+}
 
 @media print {
   @page { size: A4; margin: 14mm; }

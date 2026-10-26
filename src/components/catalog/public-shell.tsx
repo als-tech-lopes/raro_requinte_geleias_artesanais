@@ -41,16 +41,16 @@ export function PublicShell({ settings, adminName, children }: PublicShellProps)
   return (
     <div style={style} className="catalog-public min-h-screen bg-[#f7f1e5] text-[#29231d]">
       <header className="sticky top-0 z-40 border-b border-[#dfd4c2]/80 bg-[#fffdf8]/95 backdrop-blur-xl">
-        <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:h-[76px] sm:px-6 lg:px-8">
+          <Link href="/" className="flex min-w-0 items-center gap-2 sm:gap-3" onClick={() => setOpen(false)}>
             {logoUrl ? (
               <PublicImage src={logoUrl} alt={`Logotipo ${settings.businessName}`} className="h-11 w-11 rounded-full" />
             ) : (
               <span className="grid h-11 w-11 place-items-center rounded-full bg-[var(--catalog-primary)] font-serif text-lg font-bold text-white">RR</span>
             )}
-            <span>
-              <strong className="block font-serif text-lg leading-none">{settings.businessName}</strong>
-              <small className="mt-1 block text-[9px] font-bold uppercase tracking-[.22em] text-[var(--catalog-secondary)]">feito artesanalmente</small>
+            <span className="min-w-0">
+              <strong className="block max-w-[9.5rem] truncate font-serif text-base leading-none sm:max-w-[15rem] sm:text-lg">{settings.businessName}</strong>
+              <small className="mt-1 hidden text-[9px] font-bold uppercase tracking-[.22em] text-[var(--catalog-secondary)] sm:block">feito artesanalmente</small>
             </span>
           </Link>
 
@@ -62,7 +62,7 @@ export function PublicShell({ settings, adminName, children }: PublicShellProps)
             ))}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <Link href={accountHref} title={adminName ? `Sessão de ${adminName}` : "Acessar área administrativa"} className="hidden items-center gap-2 rounded-full border border-[var(--catalog-primary)] px-4 py-2.5 text-sm font-bold text-[var(--catalog-primary)] transition hover:bg-[var(--catalog-primary)] hover:text-white sm:flex">
               <AccountIcon size={18} />{accountLabel}
             </Link>
@@ -93,7 +93,7 @@ export function PublicShell({ settings, adminName, children }: PublicShellProps)
       <main>{children}</main>
 
       <footer className="mt-20 bg-[#24382d] text-white">
-        <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 md:grid-cols-[1.2fr_.8fr_.8fr]">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.2fr_.8fr_.8fr] lg:px-8 lg:py-12">
           <div><p className="font-serif text-2xl font-bold">{settings.businessName}</p><p className="mt-3 max-w-md text-sm leading-6 text-white/65">{settings.shortDescription}</p></div>
           <div><p className="text-xs font-bold uppercase tracking-[.16em] text-[#dec7a1]">Navegue</p><div className="mt-4 grid gap-2 text-sm text-white/70"><Link href="/catalogo">Nossas geleias</Link><Link href="/galeria">Galeria</Link><Link href="/sobre">Nossa história</Link><Link href="/contato">Contato</Link><Link href={accountHref}>{accountLabel}</Link></div></div>
           <div><p className="text-xs font-bold uppercase tracking-[.16em] text-[#dec7a1]">Onde estamos</p><p className="mt-4 text-sm text-white/70">{[settings.city, settings.state].filter(Boolean).join(" — ") || "Consulte nossa área de atendimento"}</p>{instagram && <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-bold"><Instagram size={17} />@{instagram}</a>}</div>
