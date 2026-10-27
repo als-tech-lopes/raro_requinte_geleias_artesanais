@@ -16,7 +16,7 @@ export function JamClickEffect() {
   useEffect(() => {
     function splash(event: PointerEvent) {
       if (event.button !== 0 || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-      const target = event.target instanceof Element ? event.target.closest("button:not(:disabled), a[data-jam-effect]") : null;
+      const target = event.target instanceof Element ? event.target.closest("button:not(:disabled), nav a, a.rounded-full, a[data-jam-effect]") : null;
       if (!target || !target.closest(".catalog-public")) return;
 
       const id = nextId.current++;
