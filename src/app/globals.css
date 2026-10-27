@@ -66,23 +66,57 @@ button { cursor: pointer; }
 .catalog-public article.group > div:last-child > div:last-child { margin-top: auto; padding-top: 1rem; }
 .sale-print { max-width: 100%; }
 
-@media (min-width: 1280px) {
+@media (min-width: 1024px) {
   .catalog-public .page-shell,
   .catalog-public .desktop-public-frame {
-    width: 80%;
-    max-width: 80rem;
+    width: 94%;
+    max-width: 90rem;
   }
   .catalog-public .page-shell.max-w-5xl { max-width: 64rem; }
   .catalog-public .page-shell.max-w-6xl { max-width: 72rem; }
+  .catalog-public > header > .desktop-public-frame { height: 4rem; }
+  .catalog-public footer { margin-top: 4rem; }
+
+  .catalog-public [class~="text-5xl"],
+  .catalog-public [class~="sm:text-5xl"] { font-size: 2.5rem !important; }
+  .catalog-public [class~="text-6xl"],
+  .catalog-public [class~="sm:text-6xl"],
+  .catalog-public [class~="lg:text-6xl"] { font-size: 3rem !important; }
+  .catalog-public [class~="text-7xl"],
+  .catalog-public [class~="sm:text-7xl"],
+  .catalog-public [class~="lg:text-7xl"] { font-size: 3.6rem !important; }
+  .catalog-public [class~="text-4xl"],
+  .catalog-public [class~="sm:text-4xl"],
+  .catalog-public [class~="lg:text-4xl"] { font-size: 2rem !important; }
+  .catalog-public [class~="text-3xl"],
+  .catalog-public [class~="sm:text-3xl"] { font-size: 1.65rem !important; }
+
+  .catalog-public [class~="py-12"], .catalog-public [class~="sm:py-12"], .catalog-public [class~="lg:py-12"] { padding-block: 2.5rem !important; }
+  .catalog-public [class~="py-14"], .catalog-public [class~="sm:py-14"], .catalog-public [class~="lg:py-14"] { padding-block: 2.75rem !important; }
+  .catalog-public [class~="py-16"], .catalog-public [class~="sm:py-16"], .catalog-public [class~="lg:py-16"] { padding-block: 3.25rem !important; }
+  .catalog-public [class~="py-20"], .catalog-public [class~="sm:py-20"], .catalog-public [class~="lg:py-20"] { padding-block: 4rem !important; }
+  .catalog-public [class~="lg:min-h-[620px]"] { min-height: 31rem !important; }
+
+  .catalog-public [class~="mt-8"], .catalog-public [class~="sm:mt-8"], .catalog-public [class~="lg:mt-8"] { margin-top: 1.5rem !important; }
+  .catalog-public [class~="mt-9"], .catalog-public [class~="sm:mt-9"], .catalog-public [class~="lg:mt-9"] { margin-top: 1.75rem !important; }
+  .catalog-public [class~="mt-10"], .catalog-public [class~="sm:mt-10"], .catalog-public [class~="lg:mt-10"] { margin-top: 2rem !important; }
+  .catalog-public [class~="gap-5"] { gap: 1rem !important; }
+  .catalog-public [class~="gap-8"] { gap: 1.5rem !important; }
+  .catalog-public [class~="gap-10"] { gap: 2rem !important; }
+  .catalog-public [class~="lg:gap-12"] { gap: 2.5rem !important; }
+
+  .catalog-public article.group { border-radius: 1.25rem; }
+  .catalog-public article.group > div:last-child { padding: 1rem; }
+  .catalog-public article.group [class~="text-xl"] { font-size: 1.125rem; }
 }
 
-@media (min-width: 1024px) and (max-width: 1535px) {
+@media (min-width: 1024px) and (max-width: 1279px) {
   .catalog-public [class~="lg:grid-cols-4"] {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
   }
 }
 
-@media (min-width: 768px) and (max-width: 1279px) {
+@media (min-width: 768px) and (max-width: 1023px) {
   .catalog-public [class~="md:grid-cols-[1.5fr_1fr_1fr_1fr]"] {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
