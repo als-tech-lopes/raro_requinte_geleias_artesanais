@@ -1,12 +1,13 @@
 "use client";
 
-import { AtSign as Instagram, LayoutDashboard, LogIn, Menu, ShoppingBag, X } from "lucide-react";
+import { AtSign as Instagram, LayoutDashboard, LogIn, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type CSSProperties, type ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { publicAssetUrl } from "@/services/catalog";
 import type { CatalogSettings } from "@/types/catalog";
 import { useCart } from "./cart-context";
+import { JamClickEffect } from "./jam-click-effect";
 import { PublicImage } from "./public-image";
 
 const links = [
@@ -25,7 +26,6 @@ type PublicShellProps = {
 };
 
 export function PublicShell({ settings, adminName, children }: PublicShellProps) {
-  const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { count } = useCart();
   const style = {
@@ -40,9 +40,10 @@ export function PublicShell({ settings, adminName, children }: PublicShellProps)
 
   return (
     <div style={style} className="catalog-public min-h-screen bg-[#f7f1e5] text-[#29231d]">
+      <JamClickEffect />
       <header className="sticky top-0 z-40 border-b border-[#dfd4c2]/80 bg-[#fffdf8]/95 backdrop-blur-xl">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:h-[76px] sm:px-6 lg:px-8">
-          <Link href="/" className="flex min-w-0 items-center gap-2 sm:gap-3" onClick={() => setOpen(false)}>
+        <div className="desktop-public-frame mx-auto flex h-16 max-w-7xl items-center justify-between gap-2 px-4 sm:h-[76px] sm:px-6 lg:px-8">
+          <Link href="/" className="flex min-w-0 items-center gap-2 sm:gap-3">
             {logoUrl ? (
               <PublicImage src={logoUrl} alt={`Logotipo ${settings.businessName}`} className="h-11 w-11 rounded-full" />
             ) : (
@@ -66,34 +67,28 @@ export function PublicShell({ settings, adminName, children }: PublicShellProps)
             <Link href={accountHref} title={adminName ? `Sessão de ${adminName}` : "Acessar área administrativa"} className="hidden items-center gap-2 rounded-full border border-[var(--catalog-primary)] px-4 py-2.5 text-sm font-bold text-[var(--catalog-primary)] transition hover:bg-[var(--catalog-primary)] hover:text-white sm:flex">
               <AccountIcon size={18} />{accountLabel}
             </Link>
+            <Link href={accountHref} aria-label={accountLabel} title={accountLabel} className="rounded-full border border-[#dfd4c2] bg-white p-2.5 text-[var(--catalog-primary)] sm:hidden">
+              <AccountIcon size={20} />
+            </Link>
             <Link href="/sacola" aria-label={`Minha sacola, ${count} itens`} className="relative rounded-full border border-[#dfd4c2] bg-white p-2.5 text-[var(--catalog-primary)]">
               <ShoppingBag size={20} />
               {count > 0 && <span className="absolute -right-1 -top-1 grid min-h-5 min-w-5 place-items-center rounded-full bg-[var(--catalog-secondary)] px-1 text-[10px] font-bold text-white">{count}</span>}
             </Link>
-            <button type="button" aria-label={open ? "Fechar menu" : "Abrir menu"} aria-expanded={open} className="rounded-full border border-[#dfd4c2] bg-white p-2.5 lg:hidden" onClick={() => setOpen((value) => !value)}>
-              {open ? <X size={20} /> : <Menu size={20} />}
-            </button>
           </div>
         </div>
 
-        {open && (
-          <nav className="border-t border-[#e7dccb] bg-[#fffdf8] p-4 lg:hidden">
-            {links.map((link) => (
-              <Link key={link.href} href={link.href} onClick={() => setOpen(false)} className="block rounded-xl px-4 py-3 text-sm font-semibold hover:bg-[#f4ecdf]">{link.label}</Link>
-            ))}
-            <div className="mt-2 border-t border-[#e7dccb] pt-2">
-              <Link href={accountHref} onClick={() => setOpen(false)} className="flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-[var(--catalog-primary)] hover:bg-[#f4ecdf]">
-                <AccountIcon size={18} />{accountLabel}
-              </Link>
-            </div>
-          </nav>
-        )}
+        <nav aria-label="Navegação principal" className="grid grid-cols-3 gap-1 border-t border-[#e7dccb] bg-[#fffdf8] px-3 py-2 sm:flex sm:items-center sm:justify-center sm:gap-1 sm:px-6 lg:hidden">
+          {links.map((link) => {
+            const active = pathname === link.href || (link.href !== "/" && pathname.startsWith(link.href));
+            return <Link key={link.href} href={link.href} aria-current={active ? "page" : undefined} className={`rounded-full px-2 py-2 text-center text-[11px] font-semibold leading-tight transition sm:px-3 sm:text-sm ${active ? "bg-[var(--catalog-primary)] text-white shadow-sm" : "text-[#5d554d] hover:bg-[#f0e7d9]"}`}>{link.label}</Link>;
+          })}
+        </nav>
       </header>
 
       <main>{children}</main>
 
       <footer className="mt-20 bg-[#24382d] text-white">
-        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.2fr_.8fr_.8fr] lg:px-8 lg:py-12">
+        <div className="desktop-public-frame mx-auto grid max-w-7xl gap-8 px-4 py-10 sm:px-6 md:grid-cols-[1.2fr_.8fr_.8fr] lg:px-8 lg:py-12">
           <div><p className="font-serif text-2xl font-bold">{settings.businessName}</p><p className="mt-3 max-w-md text-sm leading-6 text-white/65">{settings.shortDescription}</p></div>
           <div><p className="text-xs font-bold uppercase tracking-[.16em] text-[#dec7a1]">Navegue</p><div className="mt-4 grid gap-2 text-sm text-white/70"><Link href="/catalogo">Nossas geleias</Link><Link href="/galeria">Galeria</Link><Link href="/sobre">Nossa história</Link><Link href="/contato">Contato</Link><Link href={accountHref}>{accountLabel}</Link></div></div>
           <div><p className="text-xs font-bold uppercase tracking-[.16em] text-[#dec7a1]">Onde estamos</p><p className="mt-4 text-sm text-white/70">{[settings.city, settings.state].filter(Boolean).join(" — ") || "Consulte nossa área de atendimento"}</p>{instagram && <a href={`https://instagram.com/${instagram}`} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-2 text-sm font-bold"><Instagram size={17} />@{instagram}</a>}</div>
