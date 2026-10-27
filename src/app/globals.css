@@ -64,6 +64,13 @@ button { cursor: pointer; }
 .catalog-public article.group { display: flex; height: 100%; flex-direction: column; }
 .catalog-public article.group > div:last-child { display: flex; flex: 1; flex-direction: column; }
 .catalog-public article.group > div:last-child > div:last-child { margin-top: auto; padding-top: 1rem; }
+.catalog-public article.group > a:first-child > [role="img"] {
+  background-color: #f1e9dc;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  transform: none !important;
+}
 .sale-print { max-width: 100%; }
 
 @media (min-width: 1024px) {
