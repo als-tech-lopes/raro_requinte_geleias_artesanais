@@ -39,8 +39,10 @@ export function ProductManager({ initialProducts = mockProducts }: { initialProd
     try {
       let successMessage = "Produto salvo com sucesso.";
       if (isDemoMode()) {
-        if (view.type === "edit") setProducts(items => items.map(p => p.id === view.product.id ? { ...p, ...value, updated_at: new Date().toISOString() } : p));
-        else setProducts(items => [{ ...value, id: crypto.randomUUID(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() }, ...items]);
+        const primary = value.variations[0];
+        const demoVariations = value.variations.map(variation => ({ ...variation, id: variation.id ?? crypto.randomUUID() }));
+        if (view.type === "edit") setProducts(items => items.map(p => p.id === view.product.id ? { ...p, ...value, net_weight: primary.net_weight, unit: primary.unit, sale_price: primary.price, variations: demoVariations, updated_at: new Date().toISOString() } : p));
+        else setProducts(items => [{ ...value, net_weight: primary.net_weight, unit: primary.unit, sale_price: primary.price, variations: demoVariations, id: crypto.randomUUID(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() }, ...items]);
       } else if (view.type === "edit") {
         let saved = await updateProduct(view.product.id, value);
         if (images.length) {

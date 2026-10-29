@@ -12,6 +12,7 @@ type ProductRow = {
   ingredientes_publicos: string | null; conservacao: string | null; alergenos: string | null; observacoes_rotulagem: string | null;
   created_at: string; updated_at: string;
   categorias_produtos?: { nome: string } | { nome: string }[] | null;
+  produto_variacoes?: { id: string; peso_liquido: number; unidade: string; preco_venda: number; ordem: number }[] | null;
 };
 
 export const isDemoMode = () => !hasSupabaseConfig();
@@ -23,6 +24,7 @@ export function getProductImageUrl(path: string | null) {
 
 function toProduct(row: ProductRow): Product {
   const category = Array.isArray(row.categorias_produtos) ? row.categorias_produtos[0]?.nome : row.categorias_produtos?.nome;
+  const variations = (row.produto_variacoes ?? []).sort((a, b) => a.ordem - b.ordem).map(variation => ({ id: variation.id, net_weight: Number(variation.peso_liquido), unit: variation.unidade as ProductUnit, price: Number(variation.preco_venda) }));
   return {
     id: row.id, name: row.nome, slug: row.slug, short_description: row.descricao_curta,
     description: row.descricao, category: category ?? "Sem categoria",
@@ -32,6 +34,7 @@ function toProduct(row: ProductRow): Product {
     featured: row.destaque, published: row.publicado, main_image_path: row.imagem_principal_path,
     public_ingredients: row.ingredientes_publicos, conservation: row.conservacao,
     allergens: row.alergenos, label_notes: row.observacoes_rotulagem,
+    variations: variations.length ? variations : [{ id: row.id, net_weight: Number(row.peso_liquido), unit: row.unidade as ProductUnit, price: Number(row.preco_venda) }],
     created_at: row.created_at, updated_at: row.updated_at,
   };
 }
@@ -79,11 +82,12 @@ async function getOrCreateCategoryId(name: string) {
 }
 
 function toDatabasePayload(input: ProductValidated, categoryId: string): TablesInsert<"produtos"> & TablesUpdate<"produtos"> {
+  const primary = input.variations[0];
   return {
     categoria_id: categoryId, nome: input.name, slug: input.slug,
     descricao_curta: input.short_description, descricao: input.description,
-    peso_liquido: input.net_weight, unidade: input.unit,
-    preco_venda: input.sale_price, custo_estimado: input.estimated_cost,
+    peso_liquido: primary.net_weight, unidade: primary.unit,
+    preco_venda: primary.price, custo_estimado: input.estimated_cost,
     status: input.status.toUpperCase() as "ATIVO" | "INATIVO" | "ESGOTADO", destaque: input.featured,
     publicado: input.published, imagem_principal_path: input.main_image_path,
     ingredientes_publicos: input.public_ingredients, conservacao: input.conservation,
@@ -91,9 +95,27 @@ function toDatabasePayload(input: ProductValidated, categoryId: string): TablesI
   };
 }
 
+async function syncVariations(productId: string, variations: ProductValidated["variations"]) {
+  const supabase = createClient();
+  const ids = variations.flatMap(variation => variation.id ? [variation.id] : []);
+  let removal = supabase.from("produto_variacoes").delete().eq("produto_id", productId);
+  if (ids.length) removal = removal.not("id", "in", `(${ids.join(",")})`);
+  const { error: removalError } = await removal;
+  if (removalError) throw new Error(`Não foi possível atualizar os tamanhos: ${removalError.message}`);
+  const rows = variations.map((variation, ordem) => ({ id: variation.id, produto_id: productId, peso_liquido: variation.net_weight, unidade: variation.unit, preco_venda: variation.price, ordem }));
+  const { error } = await supabase.from("produto_variacoes").upsert(rows);
+  if (error) throw new Error(`Não foi possível salvar os tamanhos: ${error.message}`);
+}
+
+async function readProduct(id: string): Promise<Product> {
+  const { data, error } = await createClient().from("produtos").select("*, categorias_produtos(nome), produto_variacoes(id, peso_liquido, unidade, preco_venda, ordem)").eq("id", id).single();
+  if (error) throw new Error(error.message);
+  return toProduct(data as ProductRow);
+}
+
 export async function listProducts(): Promise<Product[]> {
   if (isDemoMode()) return [];
-  const { data, error } = await createClient().from("produtos").select("*, categorias_produtos(nome)").order("created_at", { ascending: false });
+  const { data, error } = await createClient().from("produtos").select("*, categorias_produtos(nome), produto_variacoes(id, peso_liquido, unidade, preco_venda, ordem)").order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return (data as ProductRow[]).map(toProduct);
 }
@@ -104,6 +126,7 @@ export async function createProduct(input: ProductValidated): Promise<Product> {
   const supabase = createClient();
   const { data, error } = await supabase.from("produtos").insert(toDatabasePayload(payload, categoryId)).select("*, categorias_produtos(nome)").single();
   if (error) throw productFriendlyError(error.message);
+  await syncVariations(data.id, payload.variations);
   if (payload.stock_quantity > 0) {
     const { error: stockError } = await supabase.rpc("ajustar_estoque", { p_item_tipo: "PRODUTO", p_item_id: data.id, p_novo_saldo: payload.stock_quantity, p_observacoes: "Estoque inicial do cadastro do produto" });
     if (stockError) {
@@ -112,7 +135,7 @@ export async function createProduct(input: ProductValidated): Promise<Product> {
     }
     data.quantidade_disponivel = payload.stock_quantity;
   }
-  return toProduct(data as ProductRow);
+  return readProduct(data.id);
 }
 
 export async function updateProduct(id: string, input: ProductValidated): Promise<Product> {
@@ -127,7 +150,8 @@ export async function updateProduct(id: string, input: ProductValidated): Promis
   }
   const { data, error } = await supabase.from("produtos").update(toDatabasePayload(payload, categoryId)).eq("id", id).select("*, categorias_produtos(nome)").single();
   if (error) throw productFriendlyError(error.message);
-  return toProduct(data as ProductRow);
+  await syncVariations(id, payload.variations);
+  return readProduct(data.id);
 }
 
 export async function getProductDeletionStatus(id: string): Promise<ProductDeletionStatus> {

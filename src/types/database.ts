@@ -732,6 +732,12 @@ export type Database = {
           },
         ]
       }
+      produto_variacoes: {
+        Row: { id: string; produto_id: string; peso_liquido: number; unidade: Database["public"]["Enums"]["unidade_medida"]; preco_venda: number; ordem: number; created_at: string; updated_at: string }
+        Insert: { id?: string; produto_id: string; peso_liquido: number; unidade: Database["public"]["Enums"]["unidade_medida"]; preco_venda: number; ordem?: number; created_at?: string; updated_at?: string }
+        Update: { id?: string; produto_id?: string; peso_liquido?: number; unidade?: Database["public"]["Enums"]["unidade_medida"]; preco_venda?: number; ordem?: number; created_at?: string; updated_at?: string }
+        Relationships: [{ foreignKeyName: "produto_variacoes_produto_id_fkey"; columns: ["produto_id"]; isOneToOne: false; referencedRelation: "produtos"; referencedColumns: ["id"] }]
+      }
       produtos: {
         Row: {
           alergenos: string | null
@@ -1274,6 +1280,7 @@ export type Database = {
           disponivel: boolean | null
           slug: string | null
           unidade: Database["public"]["Enums"]["unidade_medida"] | null
+          variacoes: Json | null
         }
         Relationships: [
           {
@@ -1443,6 +1450,7 @@ export type Database = {
         Args: { p_itens: Json }
         Returns: {
           produto_id: string
+          variacao_id: string
           nome: string | null
           slug: string | null
           peso_liquido: number | null

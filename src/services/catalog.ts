@@ -43,6 +43,7 @@ export async function getCatalogProducts(): Promise<CatalogProduct[]> {
     price: Number(row.preco_venda), featured: Boolean(row.destaque), imagePath: row.imagem_principal_path,
     imageUrl: publicAssetUrl("product-images", row.imagem_principal_path), available: Boolean(row.disponivel), publicIngredients: row.ingredientes_publicos,
     conservation: row.conservacao, allergens: row.alergenos, labelNotes: row.observacoes_rotulagem,
+    variations: (Array.isArray(row.variacoes) ? row.variacoes : []).flatMap((variation): CatalogProduct["variations"] => variation && typeof variation === "object" && !Array.isArray(variation) && "id" in variation && "peso_liquido" in variation && "unidade" in variation && "preco_venda" in variation ? [{ id: String(variation.id), netWeight: Number(variation.peso_liquido), unit: String(variation.unidade) as ProductUnit, price: Number(variation.preco_venda) }] : []),
   }] : []);
 }
 
@@ -68,9 +69,9 @@ export async function getCatalogMedia(): Promise<CatalogMedia[]> {
 
 export async function validateCart(entries: CartEntry[]): Promise<ValidatedCartItem[]> {
   if (!entries.length) return [];
-  const { data, error } = await createPublicClient().rpc("catalogo_validar_sacola", { p_itens: entries.map(entry => ({ produto_id: entry.productId, quantidade: entry.quantity })) });
+  const { data, error } = await createPublicClient().rpc("catalogo_validar_sacola", { p_itens: entries.map(entry => ({ produto_id: entry.productId, variacao_id: entry.variationId, quantidade: entry.quantity })) });
   if (error) throw new Error(`Não foi possível atualizar a sacola: ${error.message}`);
-  return (data ?? []).map(row => ({ productId: row.produto_id, name: row.nome, slug: row.slug, netWeight: row.peso_liquido === null ? null : Number(row.peso_liquido), unit: row.unidade as ProductUnit | null, price: row.preco_venda === null ? null : Number(row.preco_venda), imageUrl: publicAssetUrl("product-images", row.imagem_principal_path), quantity: row.quantidade_solicitada, valid: row.valido, reason: row.motivo }));
+  return (data ?? []).map(row => ({ productId: row.produto_id, variationId: row.variacao_id, name: row.nome, slug: row.slug, netWeight: row.peso_liquido === null ? null : Number(row.peso_liquido), unit: row.unidade as ProductUnit | null, price: row.preco_venda === null ? null : Number(row.preco_venda), imageUrl: publicAssetUrl("product-images", row.imagem_principal_path), quantity: row.quantidade_solicitada, valid: row.valido, reason: row.motivo }));
 }
 
 export function normalizeWhatsapp(value: string) { const digits = value.replace(/\D/g, ""); if (/^55\d{10,11}$/.test(digits)) return digits; if (/^\d{10,11}$/.test(digits)) return `55${digits}`; return ""; }

@@ -2,6 +2,13 @@ export const productStatuses = ["ativo", "inativo", "esgotado"] as const;
 export type ProductStatus = (typeof productStatuses)[number];
 export type ProductUnit = "kg" | "g" | "L" | "ml" | "unidade";
 
+export type ProductVariation = {
+  id: string;
+  net_weight: number;
+  unit: ProductUnit;
+  price: number;
+};
+
 export type Product = {
   id: string;
   name: string;
@@ -22,6 +29,7 @@ export type Product = {
   conservation: string | null;
   allergens: string | null;
   label_notes: string | null;
+  variations: ProductVariation[];
   created_at: string;
   updated_at: string;
 };

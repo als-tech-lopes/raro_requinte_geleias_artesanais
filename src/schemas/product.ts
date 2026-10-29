@@ -22,10 +22,22 @@ export const productSchema = z.object({
   conservation: z.string().trim().max(1000).nullable().default(null),
   allergens: z.string().trim().max(1000).nullable().default(null),
   label_notes: z.string().trim().max(1000).nullable().default(null),
+  variations: z.array(z.object({
+    id: z.string().uuid().optional(),
+    net_weight: numberField("Tamanho").positive("O tamanho deve ser maior que zero."),
+    unit: z.enum(["kg", "g", "L", "ml", "unidade"]),
+    price: numberField("Preço").nonnegative("O preço não pode ser negativo."),
+  })).min(1, "Cadastre ao menos um tamanho de pote."),
 }).superRefine((value, context) => {
   if (value.status === "esgotado" && value.stock_quantity !== 0) {
     context.addIssue({ code: z.ZodIssueCode.custom, path: ["stock_quantity"], message: "Produto esgotado deve ter estoque zero." });
   }
+  const sizes = new Set<string>();
+  value.variations.forEach((variation, index) => {
+    const key = `${variation.net_weight}:${variation.unit}`;
+    if (sizes.has(key)) context.addIssue({ code: z.ZodIssueCode.custom, path: ["variations", index, "net_weight"], message: "Este tamanho já foi cadastrado." });
+    sizes.add(key);
+  });
 });
 
 export type ProductFormValues = z.input<typeof productSchema>;

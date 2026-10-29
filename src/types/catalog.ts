@@ -42,10 +42,13 @@ export type CatalogProduct = {
   conservation: string | null;
   allergens: string | null;
   labelNotes: string | null;
+  variations: CatalogVariation[];
 };
+
+export type CatalogVariation = { id: string; netWeight: number; unit: ProductUnit; price: number };
 
 export type CatalogImage = { id: string; productId: string; path: string; url: string; alt: string; order: number };
 export type CatalogTestimonial = { id: string; publicName: string; comment: string; rating: number; photoUrl: string | null; featured: boolean; date: string };
 export type CatalogMedia = { id: string; type: "BANNER" | "PRODUCAO" | "INSTITUCIONAL" | "DIVULGACAO"; title: string; url: string; alt: string; order: number };
-export type CartEntry = { productId: string; quantity: number };
-export type ValidatedCartItem = { productId: string; name: string | null; slug: string | null; netWeight: number | null; unit: ProductUnit | null; price: number | null; imageUrl: string | null; quantity: number; valid: boolean; reason: string | null };
+export type CartEntry = { productId: string; variationId?: string; quantity: number };
+export type ValidatedCartItem = { productId: string; variationId: string; name: string | null; slug: string | null; netWeight: number | null; unit: ProductUnit | null; price: number | null; imageUrl: string | null; quantity: number; valid: boolean; reason: string | null };

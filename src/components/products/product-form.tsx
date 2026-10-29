@@ -1,20 +1,22 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader2, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Plus, Save, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { productSchema, slugify, type ProductFormValues, type ProductValidated } from "@/schemas/product";
 import type { Product } from "@/types/product";
 import { ProductImagesManager } from "./product-images-manager";
 
-const defaults: ProductFormValues = { name: "", slug: "", short_description: "", description: "", category: "Clássicas", net_weight: 250, unit: "g", sale_price: 0, estimated_cost: 0, stock_quantity: 0, status: "ativo", featured: false, published: false, main_image_path: null, public_ingredients: "", conservation: "", allergens: "", label_notes: "" };
+const defaults: ProductFormValues = { name: "", slug: "", short_description: "", description: "", category: "Clássicas", net_weight: 250, unit: "g", sale_price: 0, estimated_cost: 0, stock_quantity: 0, status: "ativo", featured: false, published: false, main_image_path: null, public_ingredients: "", conservation: "", allergens: "", label_notes: "", variations: [{ net_weight: 250, unit: "g", price: 0 }] };
 
 export function ProductForm({ product, submitError, onCancel, onSave }: { product?: Product; submitError?: string | null; onCancel: () => void; onSave: (value: ProductValidated, images: File[]) => Promise<void> }) {
   const [images, setImages] = useState<File[]>([]);
   const [existingImageCount, setExistingImageCount] = useState<number | null>(product ? null : 0);
   const [imageError, setImageError] = useState<string | null>(null);
-  const { register, handleSubmit, control, setValue, formState: { errors, isSubmitting } } = useForm<ProductFormValues, unknown, ProductValidated>({ resolver: zodResolver(productSchema), defaultValues: product ?? defaults });
+  const initialValues = product ? { ...product, variations: product.variations.length ? product.variations : [{ net_weight: product.net_weight, unit: product.unit, price: product.sale_price }] } : defaults;
+  const { register, handleSubmit, control, setValue, formState: { errors, isSubmitting } } = useForm<ProductFormValues, unknown, ProductValidated>({ resolver: zodResolver(productSchema), defaultValues: initialValues });
+  const { fields: variations, append, remove } = useFieldArray({ control, name: "variations" });
   const name = useWatch({ control, name: "name" });
   const mainImagePath = useWatch({ control, name: "main_image_path" });
   useEffect(() => { if (!product) setValue("slug", slugify(name)); }, [name, product, setValue]);
@@ -34,8 +36,12 @@ export function ProductForm({ product, submitError, onCancel, onSave }: { produc
         <Field label="Nome do produto" error={errors.name?.message}><input className={field} {...register("name")} placeholder="Ex.: Geleia de Morango" /></Field>
         <Field label="Descrição curta (opcional)" error={errors.short_description?.message}><input className={field} {...register("short_description")} placeholder="Resumo que aparecerá nas vitrines" /></Field>
         <Field label="Categoria" error={errors.category?.message} hint="Se ainda não existir, a categoria será criada automaticamente."><input className={field} {...register("category")} /></Field>
-        <div className="grid grid-cols-2 gap-3"><Field label="Peso líquido" error={errors.net_weight?.message}><input type="number" step="0.01" className={field} {...register("net_weight")} /></Field><Field label="Unidade" error={errors.unit?.message}><select className={field} {...register("unit")}><option>g</option><option>kg</option><option>ml</option><option>L</option><option>unidade</option></select></Field></div>
-        <Field label="Preço de venda" error={errors.sale_price?.message}><div className="relative"><span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#8a8178]">R$</span><input type="number" step="0.01" className={`${field} pl-10`} {...register("sale_price")} /></div></Field>
+        <input type="hidden" {...register("net_weight")} /><input type="hidden" {...register("unit")} /><input type="hidden" {...register("sale_price")} />
+        <div className="rounded-xl border border-[#e6dbc9] bg-[#f9f3e8] p-4 sm:col-span-2">
+          <div className="flex items-center justify-between gap-3"><div><strong className="text-sm">Tamanhos e preços</strong><p className="mt-1 text-xs text-[#786f66]">Informe o valor de venda de cada tamanho de pote.</p></div><button type="button" onClick={() => append({ net_weight: 250, unit: "g", price: 0 })} className="inline-flex items-center gap-1.5 rounded-lg border border-[#d8cbb9] bg-white px-3 py-2 text-xs font-bold"><Plus size={15} />Adicionar tamanho</button></div>
+          <div className="mt-4 space-y-3">{variations.map((variation, index) => <div key={variation.id} className="grid grid-cols-[1fr_100px_1fr_auto] gap-2"><Field label="Tamanho" error={errors.variations?.[index]?.net_weight?.message}><input type="number" min="0.001" step="0.001" className={field} {...register(`variations.${index}.net_weight`)} /></Field><Field label="Unidade" error={errors.variations?.[index]?.unit?.message}><select className={field} {...register(`variations.${index}.unit`)}><option>g</option><option>kg</option><option>ml</option><option>L</option><option>unidade</option></select></Field><Field label="Preço" error={errors.variations?.[index]?.price?.message}><div className="relative"><span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs text-[#8a8178]">R$</span><input type="number" min="0" step="0.01" className={`${field} pl-9`} {...register(`variations.${index}.price`)} /></div></Field><button type="button" aria-label="Remover tamanho" disabled={variations.length === 1} onClick={() => remove(index)} className="mt-6 rounded-lg p-2 text-red-700 disabled:opacity-30"><Trash2 size={17} /></button></div>)}</div>
+          {typeof errors.variations?.message === "string" && <p className="mt-2 text-xs text-red-700">{errors.variations.message}</p>}
+        </div>
         <Field label="Custo estimado" error={errors.estimated_cost?.message}><div className="relative"><span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#8a8178]">R$</span><input type="number" step="0.01" className={`${field} pl-10`} {...register("estimated_cost")} /></div></Field>
         <Field label="Quantidade disponível" error={errors.stock_quantity?.message}><input type="number" className={field} {...register("stock_quantity")} /></Field>
         <Field label="Status" error={errors.status?.message}><select className={field} {...register("status")}><option value="ativo">Ativo</option><option value="inativo">Inativo</option><option value="esgotado">Esgotado</option></select></Field>
