@@ -102,9 +102,18 @@ async function syncVariations(productId: string, variations: ProductValidated["v
   if (ids.length) removal = removal.not("id", "in", `(${ids.join(",")})`);
   const { error: removalError } = await removal;
   if (removalError) throw new Error(`Não foi possível atualizar os tamanhos: ${removalError.message}`);
-  const rows = variations.map((variation, ordem) => ({ id: variation.id, produto_id: productId, peso_liquido: variation.net_weight, unidade: variation.unit, preco_venda: variation.price, ordem }));
-  const { error } = await supabase.from("produto_variacoes").upsert(rows);
-  if (error) throw new Error(`Não foi possível salvar os tamanhos: ${error.message}`);
+
+  const existing = variations.flatMap((variation, ordem) => variation.id ? [{ id: variation.id, produto_id: productId, peso_liquido: variation.net_weight, unidade: variation.unit, preco_venda: variation.price, ordem }] : []);
+  if (existing.length) {
+    const { error } = await supabase.from("produto_variacoes").upsert(existing);
+    if (error) throw new Error(`Não foi possível atualizar os tamanhos existentes: ${error.message}`);
+  }
+
+  const additions = variations.flatMap((variation, ordem) => variation.id ? [] : [{ produto_id: productId, peso_liquido: variation.net_weight, unidade: variation.unit, preco_venda: variation.price, ordem }]);
+  if (additions.length) {
+    const { error } = await supabase.from("produto_variacoes").insert(additions);
+    if (error) throw new Error(`Não foi possível adicionar os novos tamanhos: ${error.message}`);
+  }
 }
 
 async function readProduct(id: string): Promise<Product> {
