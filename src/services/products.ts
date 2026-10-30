@@ -9,6 +9,7 @@ type ProductRow = {
   preco_venda: number; custo_estimado: number; quantidade_disponivel: number;
   status: "ATIVO" | "INATIVO" | "ESGOTADO"; destaque: boolean;
   publicado: boolean; imagem_principal_path: string | null;
+  deleted_at: string | null;
   ingredientes_publicos: string | null; conservacao: string | null; alergenos: string | null; observacoes_rotulagem: string | null;
   created_at: string; updated_at: string;
   categorias_produtos?: { nome: string } | { nome: string }[] | null;
@@ -124,7 +125,7 @@ async function readProduct(id: string): Promise<Product> {
 
 export async function listProducts(): Promise<Product[]> {
   if (isDemoMode()) return [];
-  const { data, error } = await createClient().from("produtos").select("*, categorias_produtos(nome), produto_variacoes(id, peso_liquido, unidade, preco_venda, ordem)").order("created_at", { ascending: false });
+  const { data, error } = await createClient().from("produtos").select("*, categorias_produtos(nome), produto_variacoes(id, peso_liquido, unidade, preco_venda, ordem)").is("deleted_at", null).order("created_at", { ascending: false });
   if (error) throw new Error(error.message);
   return (data as ProductRow[]).map(toProduct);
 }
@@ -188,24 +189,7 @@ export async function getProductDeletionStatus(id: string): Promise<ProductDelet
   };
 }
 
-export async function archiveProduct(id: string): Promise<Product> {
-  const { data, error } = await createClient()
-    .from("produtos")
-    .update({ status: "INATIVO", publicado: false, destaque: false })
-    .eq("id", id)
-    .select("*, categorias_produtos(nome)")
-    .single();
-
-  if (error) throw new Error(`Não foi possível arquivar o produto: ${error.message}`);
-  return toProduct(data as ProductRow);
-}
-
-export async function deleteProduct(id: string): Promise<{ warning?: string }> {
-  const status = await getProductDeletionStatus(id);
-  if (!status.canDelete) {
-    throw new Error("O produto possui histórico e não pode ser excluído. Inative-o para preservar os registros.");
-  }
-
+export async function deleteProduct(id: string): Promise<{ mode: "permanent" | "archived"; warning?: string }> {
   const supabase = createClient();
   const { data: images, error: imageReadError } = await supabase
     .from("produto_imagens")
@@ -213,16 +197,19 @@ export async function deleteProduct(id: string): Promise<{ warning?: string }> {
     .eq("produto_id", id);
   if (imageReadError) throw new Error(`Não foi possível verificar as imagens do produto: ${imageReadError.message}`);
 
-  const { error } = await supabase.from("produtos").delete().eq("id", id);
+  const { data: result, error } = await supabase.rpc("excluir_produto_seguro", { p_produto_id: id });
   if (error) throw new Error(`Não foi possível excluir o produto: ${error.message}`);
+
+  const mode = result === "ARQUIVADO" ? "archived" : "permanent";
+  if (mode === "archived") return { mode };
 
   const paths = (images ?? []).map((image) => image.storage_path);
   if (paths.length) {
     const { error: storageError } = await supabase.storage.from("product-images").remove(paths);
-    if (storageError) return { warning: `Produto excluído, mas algumas imagens não puderam ser removidas: ${storageError.message}` };
+    if (storageError) return { mode, warning: `Produto excluído, mas algumas imagens não puderam ser removidas: ${storageError.message}` };
   }
 
-  return {};
+  return { mode };
 }
 
 export async function uploadProductImages(productId: string, files: File[]) {

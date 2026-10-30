@@ -1,10 +1,10 @@
 "use client";
 
-import { AlertTriangle, ChevronDown, Edit3, Leaf, Loader2, PackagePlus, Power, Search, ShieldAlert, Sparkles, Trash2, X } from "lucide-react";
+import { AlertTriangle, ChevronDown, Edit3, Leaf, Loader2, PackagePlus, Search, ShieldAlert, Sparkles, Trash2, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { ProductForm } from "./product-form";
 import { mockProducts } from "@/services/products.mock";
-import { archiveProduct, createProduct, deleteProduct, getProductDeletionStatus, getProductImageUrl, isDemoMode, listProducts, updateProduct, uploadProductImages } from "@/services/products";
+import { createProduct, deleteProduct, getProductDeletionStatus, getProductImageUrl, isDemoMode, listProducts, updateProduct, uploadProductImages } from "@/services/products";
 import type { ProductValidated } from "@/schemas/product";
 import type { Product, ProductDeletionStatus } from "@/types/product";
 
@@ -104,9 +104,9 @@ export function ProductManager({ initialProducts = mockProducts }: { initialProd
     setDeletionBusy(true);
     setDeletionError(null);
     try {
-      const result = isDemoMode() ? {} : await deleteProduct(deleteTarget.id);
+      const result = isDemoMode() ? { mode: "permanent" as const } : await deleteProduct(deleteTarget.id);
       setProducts(items => items.filter(product => product.id !== deleteTarget.id));
-      setNotice(result.warning ?? "Produto excluído definitivamente.");
+      setNotice(result.warning ?? (result.mode === "archived" ? "Produto excluído. O histórico dos relatórios foi preservado." : "Produto excluído definitivamente."));
       setDeleteTarget(null);
       setDeletionStatus(null);
     } catch (error) {
@@ -117,29 +117,11 @@ export function ProductManager({ initialProducts = mockProducts }: { initialProd
     setTimeout(() => setNotice(null), 3200);
   }
 
-  async function archive() {
-    if (!deleteTarget) return;
-    setDeletionBusy(true);
-    setDeletionError(null);
-    try {
-      const updated = isDemoMode() ? { ...deleteTarget, status: "inativo" as const, published: false, featured: false, updated_at: new Date().toISOString() } : await archiveProduct(deleteTarget.id);
-      setProducts(items => items.map(product => product.id === updated.id ? updated : product));
-      setNotice("Produto arquivado. Vendas, produções e relatórios foram preservados.");
-      setDeleteTarget(null);
-      setDeletionStatus(null);
-    } catch (error) {
-      setDeletionError(error instanceof Error ? error.message : "Não foi possível arquivar o produto.");
-    } finally {
-      setDeletionBusy(false);
-    }
-    setTimeout(() => setNotice(null), 3200);
-  }
-
   if (view.type !== "list") return <ProductForm product={view.type === "edit" ? view.product : undefined} submitError={formError} onCancel={() => { setFormError(null); setView({ type: "list" }); }} onSave={save} />;
 
   return <div className="animate-rise mx-auto max-w-[1320px]">
     {notice && <div role="status" className="fixed right-5 top-20 z-50 rounded-xl bg-[#2c4637] px-4 py-3 text-sm font-semibold text-white shadow-xl">{notice}</div>}
-    {deleteTarget && <DeletionDialog product={deleteTarget} status={deletionStatus} error={deletionError} busy={deletionBusy} onClose={closeDeletion} onDelete={removePermanently} onArchive={archive} />}
+    {deleteTarget && <DeletionDialog product={deleteTarget} status={deletionStatus} error={deletionError} busy={deletionBusy} onClose={closeDeletion} onDelete={removePermanently} />}
     <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[.18em] text-[#9c2348]"><Leaf size={14} />Catálogo e estoque</div><h1 className="font-serif text-4xl leading-none sm:text-5xl">Produtos</h1><p className="mt-3 max-w-xl text-sm leading-6 text-[#776e65]">Organize os sabores, preços e disponibilidade da sua produção artesanal.</p></div><button onClick={() => { setFormError(null); setView({ type: "create" }); }} className="flex items-center justify-center gap-2 rounded-xl bg-[#9c2348] px-5 py-3 text-sm font-bold text-white shadow-[0_8px_20px_rgba(156,35,72,.22)] hover:bg-[#7e1938]"><PackagePlus size={18} />Novo produto</button></div>
     {isDemoMode() && <div className="mt-6 flex items-start gap-3 rounded-2xl border border-[#ddc898] bg-[#fff7df] p-4 text-sm text-[#66552b]"><Sparkles className="mt-0.5 shrink-0" size={18} /><div><strong>Modo demonstração</strong><p className="mt-0.5 text-xs leading-5 opacity-80">As alterações ficam nesta sessão. Configure o arquivo .env.local para conectar ao Supabase.</p></div></div>}
     <div className="mt-7 grid gap-4 sm:grid-cols-3"><Metric label="Produtos em uso" value={String(operationalProducts.length).padStart(2, "0")} note={`${products.filter(p => p.published && p.status === "ativo").length} publicados no catálogo`} /><Metric label="Valor em estoque" value={money.format(stockValue)} note="Desconsidera produtos arquivados" /><Metric label="Atenção ao estoque" value={String(lowStock).padStart(2, "0")} note="Produtos em uso com 5 unidades ou menos" warn={lowStock > 0} /></div>
@@ -152,7 +134,7 @@ export function ProductManager({ initialProducts = mockProducts }: { initialProd
   </div>;
 }
 
-function DeletionDialog({ product, status, error, busy, onClose, onDelete, onArchive }: { product: Product; status: ProductDeletionStatus | null; error: string | null; busy: boolean; onClose: () => void; onDelete: () => void; onArchive: () => void }) {
+function DeletionDialog({ product, status, error, busy, onClose, onDelete }: { product: Product; status: ProductDeletionStatus | null; error: string | null; busy: boolean; onClose: () => void; onDelete: () => void }) {
   const references = status ? [
     ["Receitas", status.references.recipes],
     ["Produções", status.references.productions],
@@ -169,11 +151,11 @@ function DeletionDialog({ product, status, error, busy, onClose, onDelete, onArc
       {!status && !error && <div className="mt-7 flex items-center gap-3 rounded-xl bg-[#f7f1e5] p-4 text-sm text-[#6f665d]"><Loader2 className="animate-spin" size={18} />Verificando vínculos do produto...</div>}
       {error && <div role="alert" className="mt-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-700">{error}</div>}
 
-      {status?.canDelete && <div className="mt-6"><p className="text-sm leading-6 text-[#665e57]">Este produto não possui receitas, produções, vendas ou movimentações vinculadas. Você pode arquivá-lo com segurança ou excluí-lo permanentemente.</p><p className="mt-3 rounded-xl bg-[#eef5ee] p-3 text-xs leading-5 text-[#34603c]"><strong>Arquivar</strong> retira o produto da operação e do catálogo, mas mantém seu cadastro e não altera relatórios.</p><p className="mt-3 rounded-xl bg-red-50 p-3 text-xs leading-5 text-red-700">A exclusão definitiva remove também os registros de imagens e não poderá ser desfeita.</p></div>}
+      {status?.canDelete && <div className="mt-6"><p className="text-sm leading-6 text-[#665e57]">Este produto não possui receitas, produções, vendas ou movimentações vinculadas.</p><p className="mt-3 rounded-xl bg-red-50 p-3 text-xs leading-5 text-red-700">A exclusão será definitiva, removerá também os registros de imagens e não poderá ser desfeita.</p></div>}
 
-      {status && !status.canDelete && <div className="mt-6"><p className="text-sm leading-6 text-[#665e57]">A exclusão definitiva foi bloqueada porque este produto possui histórico relacionado:</p><ul className="mt-4 space-y-2">{references.map(([label, count]) => <li key={String(label)} className="flex items-center justify-between rounded-xl bg-[#f7f1e5] px-4 py-2.5 text-sm"><span>{label}</span><strong>{count}</strong></li>)}</ul><p className="mt-4 text-sm leading-6 text-[#665e57]">{product.status === "inativo" ? "O produto já está arquivado e seu histórico permanece preservado." : "Arquive o produto para retirá-lo da operação e do catálogo sem alterar vendas, produções ou relatórios anteriores."}</p></div>}
+      {status && !status.canDelete && <div className="mt-6"><p className="text-sm leading-6 text-[#665e57]">Este produto possui histórico relacionado:</p><ul className="mt-4 space-y-2">{references.map(([label, count]) => <li key={String(label)} className="flex items-center justify-between rounded-xl bg-[#f7f1e5] px-4 py-2.5 text-sm"><span>{label}</span><strong>{count}</strong></li>)}</ul><p className="mt-4 rounded-xl bg-[#eef5ee] p-3 text-sm leading-6 text-[#34603c]">O produto será retirado da gestão, do estoque operacional e do catálogo. O cadastro interno e todos os vínculos serão mantidos para que vendas, produções, movimentações e relatórios anteriores não sejam alterados.</p></div>}
 
-      <div className="mt-7 flex flex-col-reverse gap-3 border-t border-[#eadfce] pt-5 sm:flex-row sm:justify-end"><button type="button" disabled={busy} onClick={onClose} className="rounded-xl border border-[#d8cbb9] px-5 py-2.5 text-sm font-semibold disabled:opacity-50">Cancelar</button>{status && product.status !== "inativo" && <button type="button" disabled={busy} onClick={onArchive} className="flex items-center justify-center gap-2 rounded-xl bg-[#9c2348] px-5 py-2.5 text-sm font-bold text-white hover:bg-[#7e1938] disabled:opacity-60">{busy ? <Loader2 className="animate-spin" size={17} /> : <Power size={17} />}Arquivar sem afetar relatórios</button>}{status?.canDelete && <button type="button" disabled={busy} onClick={onDelete} className="flex items-center justify-center gap-2 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-red-800 disabled:opacity-60">{busy ? <Loader2 className="animate-spin" size={17} /> : <Trash2 size={17} />}Excluir definitivamente</button>}</div>
+      <div className="mt-7 flex flex-col-reverse gap-3 border-t border-[#eadfce] pt-5 sm:flex-row sm:justify-end"><button type="button" disabled={busy} onClick={onClose} className="rounded-xl border border-[#d8cbb9] px-5 py-2.5 text-sm font-semibold disabled:opacity-50">Cancelar</button>{status && <button type="button" disabled={busy} onClick={onDelete} className="flex items-center justify-center gap-2 rounded-xl bg-red-700 px-5 py-2.5 text-sm font-bold text-white hover:bg-red-800 disabled:opacity-60">{busy ? <Loader2 className="animate-spin" size={17} /> : <Trash2 size={17} />}{status.canDelete ? "Excluir definitivamente" : "Excluir preservando histórico"}</button>}</div>
     </section>
   </div>;
 }

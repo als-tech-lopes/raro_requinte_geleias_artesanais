@@ -743,6 +743,7 @@ export type Database = {
           alergenos: string | null
           categoria_id: string
           created_at: string
+          deleted_at: string | null
           custo_estimado: number
           conservacao: string | null
           descricao: string | null
@@ -766,6 +767,7 @@ export type Database = {
           alergenos?: string | null
           categoria_id: string
           created_at?: string
+          deleted_at?: string | null
           custo_estimado?: number
           conservacao?: string | null
           descricao?: string | null
@@ -789,6 +791,7 @@ export type Database = {
           alergenos?: string | null
           categoria_id?: string
           created_at?: string
+          deleted_at?: string | null
           custo_estimado?: number
           conservacao?: string | null
           descricao?: string | null
@@ -1329,6 +1332,10 @@ export type Database = {
       excluir_ingrediente: {
         Args: { p_ingrediente_id: string }
         Returns: undefined
+      }
+      excluir_produto_seguro: {
+        Args: { p_produto_id: string }
+        Returns: string
       }
       is_admin: { Args: never; Returns: boolean }
       is_staff: { Args: never; Returns: boolean }
