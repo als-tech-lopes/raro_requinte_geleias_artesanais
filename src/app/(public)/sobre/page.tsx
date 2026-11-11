@@ -57,10 +57,10 @@ export default async function AboutPage() {
     </section>}
 
     <section className="page-shell grid items-center gap-9 py-12 sm:py-16 lg:grid-cols-2 lg:gap-12 lg:py-20">
-      <div className="relative">
+      <div className="relative flex min-h-64 items-center justify-center rounded-[1.5rem] bg-[#e6dac7] p-4 shadow-xl sm:rounded-[2rem] sm:p-6">
         <div className="absolute -bottom-4 -left-4 h-full w-full rounded-[2rem] bg-[var(--catalog-secondary)]/10" />
-        <PublicImage src={image} alt={`História da ${settings.businessName}`} className="relative aspect-[4/5] max-h-[42rem] w-full rounded-[1.5rem] shadow-xl sm:rounded-[2rem]" />
-        <div className="absolute bottom-5 left-5 right-5 rounded-2xl bg-[#fffdf8]/95 p-4 shadow-lg backdrop-blur sm:bottom-7 sm:left-7 sm:right-auto sm:max-w-xs sm:p-5"><p className="text-xs font-bold uppercase tracking-[.16em] text-[var(--catalog-secondary)]">Nossa essência</p><p className="mt-2 font-serif text-lg font-bold">Cuidado que se percebe em cada detalhe.</p></div>
+        {image ? <img src={image} alt={`História da ${settings.businessName}`} loading="lazy" decoding="async" className="relative z-10 block h-auto max-h-[42rem] w-auto max-w-full rounded-2xl object-contain" /> : <PublicImage src={null} alt={`História da ${settings.businessName}`} className="relative z-10 aspect-[4/5] max-h-[42rem] w-full rounded-[1.5rem] sm:rounded-[2rem]" />}
+        <div className="absolute bottom-5 left-5 right-5 z-20 rounded-2xl bg-[#fffdf8]/95 p-4 shadow-lg backdrop-blur sm:bottom-7 sm:left-7 sm:right-auto sm:max-w-xs sm:p-5"><p className="text-xs font-bold uppercase tracking-[.16em] text-[var(--catalog-secondary)]">Nossa essência</p><p className="mt-2 font-serif text-lg font-bold">Cuidado que se percebe em cada detalhe.</p></div>
       </div>
       <div>
         <Sparkles className="text-[var(--catalog-secondary)]" />
