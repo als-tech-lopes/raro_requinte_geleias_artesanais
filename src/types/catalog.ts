@@ -4,6 +4,7 @@ export type CatalogSettings = {
   businessName: string;
   shortDescription: string;
   mainMessage: string;
+  historySummary: string;
   story: string;
   whatsapp: string;
   instagram: string;
@@ -15,6 +16,7 @@ export type CatalogSettings = {
   logoPath: string;
   bannerPath: string;
   institutionalImagePath: string;
+  institutionalVideoPath: string;
   showSoldOut: boolean;
   showPrices: boolean;
   whatsappEnabled: boolean;

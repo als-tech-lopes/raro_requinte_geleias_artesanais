@@ -6,17 +6,18 @@ export const defaultCatalogSettings: CatalogSettings = {
   businessName: "RR Geleias Artesanais",
   shortDescription: "Sabores artesanais feitos com carinho, frutas selecionadas e receitas especiais.",
   mainMessage: "Geleias artesanais para transformar pequenos momentos em lembranças deliciosas.",
+  historySummary: "Uma história feita de afeto, receitas cuidadosas e do desejo de transformar frutas selecionadas em momentos especiais.",
   story: "Produzimos geleias artesanais em pequenos lotes, respeitando o tempo de cada receita e o sabor das frutas.",
   whatsapp: "", instagram: "", city: "", state: "", serviceInfo: "Atendimento e entregas combinados pelo WhatsApp.",
-  primaryColor: "#315c3e", secondaryColor: "#9c2348", logoPath: "", bannerPath: "", institutionalImagePath: "",
+  primaryColor: "#315c3e", secondaryColor: "#9c2348", logoPath: "", bannerPath: "", institutionalImagePath: "", institutionalVideoPath: "",
   showSoldOut: true, showPrices: true, whatsappEnabled: true, showTestimonials: true, showGallery: true,
 };
 
 const settingMap: Record<string, keyof CatalogSettings> = {
   "catalogo.nome_comercial": "businessName", "catalogo.descricao_curta": "shortDescription", "catalogo.mensagem_principal": "mainMessage",
-  "catalogo.historia": "story", "catalogo.whatsapp": "whatsapp", "catalogo.instagram": "instagram", "catalogo.cidade": "city",
+  "catalogo.resumo_historia": "historySummary", "catalogo.historia": "story", "catalogo.whatsapp": "whatsapp", "catalogo.instagram": "instagram", "catalogo.cidade": "city",
   "catalogo.estado": "state", "catalogo.atendimento": "serviceInfo", "catalogo.cor_primaria": "primaryColor", "catalogo.cor_secundaria": "secondaryColor",
-  "catalogo.logo_path": "logoPath", "catalogo.banner_path": "bannerPath", "catalogo.imagem_institucional_path": "institutionalImagePath",
+  "catalogo.logo_path": "logoPath", "catalogo.banner_path": "bannerPath", "catalogo.imagem_institucional_path": "institutionalImagePath", "catalogo.video_institucional_path": "institutionalVideoPath",
   "catalogo.exibir_esgotados": "showSoldOut", "catalogo.exibir_precos": "showPrices", "catalogo.whatsapp_ativo": "whatsappEnabled",
   "catalogo.exibir_depoimentos": "showTestimonials", "catalogo.exibir_galeria": "showGallery",
 };

@@ -10,6 +10,7 @@
 - `updated_at` é atualizado por trigger.
 - A opção **Excluir preservando histórico** aplica exclusão lógica quando existem vínculos: marca o produto como inativo/excluído e retira sua publicação e destaque, mas preserva o cadastro e todos os relatórios históricos.
 - Quando o produto não possui receitas, produções, lotes, vendas ou movimentações de estoque vinculadas, a exclusão é definitiva.
+- Produtos excluídos logicamente não reservam nome nem endereço de catálogo; ambos podem ser reutilizados em um novo cadastro.
 - O endereço do catálogo (`slug`) é gerado automaticamente a partir do nome; a descrição curta é opcional.
 - Cada produto pode possuir no máximo duas imagens.
 

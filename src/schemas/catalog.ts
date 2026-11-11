@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 export const catalogSettingsSchema = z.object({
-  businessName: z.string().trim().min(2).max(120), shortDescription: z.string().trim().min(10).max(500), mainMessage: z.string().trim().min(10).max(500), story: z.string().trim().min(20).max(5000),
+  businessName: z.string().trim().min(2).max(120), shortDescription: z.string().trim().min(10).max(500), mainMessage: z.string().trim().min(10).max(500), historySummary: z.string().trim().min(20).max(800), story: z.string().trim().min(20).max(5000),
   whatsapp: z.string().trim().max(30), instagram: z.string().trim().max(100), city: z.string().trim().max(100), state: z.string().trim().max(2), serviceInfo: z.string().trim().max(500),
-  primaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/), secondaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/), logoPath: z.string(), bannerPath: z.string(), institutionalImagePath: z.string(),
+  primaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/), secondaryColor: z.string().regex(/^#[0-9a-fA-F]{6}$/), logoPath: z.string(), bannerPath: z.string(), institutionalImagePath: z.string(), institutionalVideoPath: z.string(),
   showSoldOut: z.boolean(), showPrices: z.boolean(), whatsappEnabled: z.boolean(), showTestimonials: z.boolean(), showGallery: z.boolean(),
 });
 export type CatalogSettingsValues = z.infer<typeof catalogSettingsSchema>;

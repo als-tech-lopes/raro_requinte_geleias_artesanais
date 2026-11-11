@@ -70,6 +70,9 @@ begin
   if (select count(*) from public.catalogo_depoimentos where nome_publico like 'Cliente%') <> 1 then raise exception 'Filtro de depoimentos publicos falhou'; end if;
 
   if not exists (select 1 from public.catalogo_configuracoes where chave = 'catalogo.nome_comercial') then raise exception 'Configuracoes publicas ausentes'; end if;
+  if not exists (select 1 from public.catalogo_configuracoes where chave = 'catalogo.resumo_historia') then raise exception 'Resumo publico da historia ausente'; end if;
+  if not exists (select 1 from public.catalogo_configuracoes where chave = 'catalogo.video_institucional_path') then raise exception 'Configuracao do video institucional ausente'; end if;
+  if not exists (select 1 from storage.buckets where id = 'public-media' and file_size_limit = 52428800 and allowed_mime_types @> array['video/mp4', 'video/webm']) then raise exception 'Bucket public-media sem suporte ao video institucional'; end if;
   if not exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and policyname = 'storage_staff_insert' and roles @> array['authenticated']::name[]) then raise exception 'Politica de upload administrativo ausente'; end if;
   if exists (select 1 from pg_policies where schemaname = 'storage' and tablename = 'objects' and cmd = 'INSERT' and roles @> array['anon']::name[]) then raise exception 'Upload anonimo permitido'; end if;
 

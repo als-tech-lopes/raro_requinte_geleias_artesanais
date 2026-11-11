@@ -69,7 +69,7 @@ Como `/depoimentos` passou a ser público, a administração dos depoimentos est
 
 ## Administração
 
-- `/configuracoes/catalogo`: marca, textos, contatos, cores, imagens e opções de exibição.
+- `/configuracoes/catalogo`: marca, textos, resumo e história institucional, vídeo, contatos, cores, imagens e opções de exibição.
 - `/produtos`: publicação, destaque, textos públicos de rotulagem e galeria de imagens.
 - `/admin/depoimentos`: cadastro, edição, aprovação e autorização de publicação.
 - `/midias`: upload, publicação, ordenação e remoção de banners e fotos da galeria.
@@ -77,9 +77,9 @@ Como `/depoimentos` passou a ser público, a administração dos depoimentos est
 ## Storage
 
 - `product-images`: galeria pública dos produtos, limite de 5 MB por arquivo.
-- `public-media`: logotipo, banners, imagens institucionais, galeria e fotos de depoimentos, limite de 10 MB.
+- `public-media`: logotipo, banners, imagens institucionais, galeria, fotos de depoimentos e vídeo institucional. Imagens são validadas em até 10 MB e o vídeo em até 50 MB.
 
-Os buckets já existiam e foram reutilizados. Leitura é pública; escrita e exclusão exigem usuário administrativo autorizado. Tipos aceitos: JPEG, PNG e WebP.
+Os buckets já existiam e foram reutilizados. Leitura é pública; escrita e exclusão exigem usuário administrativo autorizado. O bucket `public-media` aceita JPEG, PNG, WebP, MP4 e WebM; os demais fluxos continuam restritos a formatos de imagem.
 
 ## Aplicação e teste
 

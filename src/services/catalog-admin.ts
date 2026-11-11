@@ -3,10 +3,10 @@ import type { CatalogSettings } from "@/types/catalog";
 import type { Database, Json } from "@/types/database";
 
 const keys: Record<keyof CatalogSettings, string> = {
-  businessName: "catalogo.nome_comercial", shortDescription: "catalogo.descricao_curta", mainMessage: "catalogo.mensagem_principal", story: "catalogo.historia",
+  businessName: "catalogo.nome_comercial", shortDescription: "catalogo.descricao_curta", mainMessage: "catalogo.mensagem_principal", historySummary: "catalogo.resumo_historia", story: "catalogo.historia",
   whatsapp: "catalogo.whatsapp", instagram: "catalogo.instagram", city: "catalogo.cidade", state: "catalogo.estado", serviceInfo: "catalogo.atendimento",
   primaryColor: "catalogo.cor_primaria", secondaryColor: "catalogo.cor_secundaria", logoPath: "catalogo.logo_path", bannerPath: "catalogo.banner_path",
-  institutionalImagePath: "catalogo.imagem_institucional_path", showSoldOut: "catalogo.exibir_esgotados", showPrices: "catalogo.exibir_precos",
+  institutionalImagePath: "catalogo.imagem_institucional_path", institutionalVideoPath: "catalogo.video_institucional_path", showSoldOut: "catalogo.exibir_esgotados", showPrices: "catalogo.exibir_precos",
   whatsappEnabled: "catalogo.whatsapp_ativo", showTestimonials: "catalogo.exibir_depoimentos", showGallery: "catalogo.exibir_galeria",
 };
 
@@ -22,6 +22,20 @@ export async function uploadPublicImage(file: File, scope: string) {
   const safe = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-"); const path = `${scope}/${crypto.randomUUID()}-${safe}`;
   const { error } = await createClient().storage.from("public-media").upload(path, file, { upsert: false });
   if (error) throw new Error(error.message); return path;
+}
+
+export async function uploadPublicVideo(file: File, scope: string) {
+  if (!["video/mp4", "video/webm"].includes(file.type)) throw new Error("Use um vídeo MP4 ou WebM.");
+  if (file.size > 50 * 1024 * 1024) throw new Error("O vídeo ultrapassa o limite de 50 MB.");
+  const safe = file.name.toLowerCase().replace(/[^a-z0-9.]+/g, "-"); const path = `${scope}/${crypto.randomUUID()}-${safe}`;
+  const { error } = await createClient().storage.from("public-media").upload(path, file, { upsert: false, contentType: file.type });
+  if (error) throw new Error(error.message); return path;
+}
+
+export async function deletePublicAsset(path: string) {
+  if (!path) return;
+  const { error } = await createClient().storage.from("public-media").remove([path]);
+  if (error) throw new Error(error.message);
 }
 
 export type AdminTestimonial = Database["public"]["Tables"]["depoimentos"]["Row"];
