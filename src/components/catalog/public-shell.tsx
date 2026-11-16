@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import type { CSSProperties, ReactNode } from "react";
 import { publicAssetUrl } from "@/services/catalog";
 import type { CatalogSettings } from "@/types/catalog";
+import { CartDrawer } from "./cart-drawer";
 import { useCart } from "./cart-context";
 import { JamClickEffect } from "./jam-click-effect";
 import { PublicImage } from "./public-image";
@@ -27,7 +28,7 @@ type PublicShellProps = {
 
 export function PublicShell({ settings, adminName, children }: PublicShellProps) {
   const pathname = usePathname();
-  const { count } = useCart();
+  const { count, openCart } = useCart();
   const style = {
     "--catalog-primary": settings.primaryColor,
     "--catalog-secondary": settings.secondaryColor,
@@ -70,10 +71,10 @@ export function PublicShell({ settings, adminName, children }: PublicShellProps)
             <Link href={accountHref} aria-label={accountLabel} title={accountLabel} className="rounded-full border border-[#dfd4c2] bg-white p-2.5 text-[var(--catalog-primary)] sm:hidden">
               <AccountIcon size={20} />
             </Link>
-            <Link href="/sacola" aria-label={`Minha sacola, ${count} itens`} className="relative rounded-full border border-[#dfd4c2] bg-white p-2.5 text-[var(--catalog-primary)]">
+            <button type="button" onClick={openCart} aria-label={`Abrir minha sacola, ${count} itens`} aria-haspopup="dialog" className="relative rounded-full border border-[#dfd4c2] bg-white p-2.5 text-[var(--catalog-primary)]">
               <ShoppingBag size={20} />
               {count > 0 && <span className="absolute -right-1 -top-1 grid min-h-5 min-w-5 place-items-center rounded-full bg-[var(--catalog-secondary)] px-1 text-[10px] font-bold text-white">{count}</span>}
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -84,6 +85,8 @@ export function PublicShell({ settings, adminName, children }: PublicShellProps)
           })}
         </nav>
       </header>
+
+      <CartDrawer settings={settings} />
 
       <main>{children}</main>
 

@@ -55,6 +55,8 @@ next-env.d.ts
 /.codex/
 /outputs/
 /work/
+/.reel-cache/
+/.reel-tools/
 /.openai/package-stage/
 /.openai/*.zip
 /supabase/.temp/
