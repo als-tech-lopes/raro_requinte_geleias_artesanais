@@ -19,7 +19,15 @@ export function ProductForm({ product, submitError, onCancel, onSave }: { produc
   const { fields: variations, append, remove } = useFieldArray({ control, name: "variations" });
   const name = useWatch({ control, name: "name" });
   const mainImagePath = useWatch({ control, name: "main_image_path" });
+  const stockQuantity = useWatch({ control, name: "stock_quantity" });
+  const status = useWatch({ control, name: "status" });
   useEffect(() => { if (!product) setValue("slug", slugify(name)); }, [name, product, setValue]);
+  useEffect(() => {
+    const quantity = Number(stockQuantity);
+    if (!Number.isFinite(quantity)) return;
+    if (quantity > 0 && status === "esgotado") setValue("status", "ativo", { shouldValidate: true });
+    if (quantity === 0 && status === "ativo") setValue("status", "esgotado", { shouldValidate: true });
+  }, [setValue, status, stockQuantity]);
   const field = "w-full rounded-xl border border-[#dfd3c2] bg-white px-3.5 py-2.5 text-sm outline-none transition focus:border-[#9c2348] focus:ring-2 focus:ring-[#9c2348]/10";
   return <section className="animate-rise mx-auto max-w-4xl">
     <button onClick={onCancel} className="mb-5 flex items-center gap-2 text-sm font-medium text-[#6f665d] hover:text-[#9c2348]"><ArrowLeft size={17} />Voltar para produtos</button>
@@ -43,7 +51,7 @@ export function ProductForm({ product, submitError, onCancel, onSave }: { produc
           {typeof errors.variations?.message === "string" && <p className="mt-2 text-xs text-red-700">{errors.variations.message}</p>}
         </div>
         <Field label="Custo estimado" error={errors.estimated_cost?.message}><div className="relative"><span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-[#8a8178]">R$</span><input type="number" step="0.01" className={`${field} pl-10`} {...register("estimated_cost")} /></div></Field>
-        <Field label="Quantidade disponível" error={errors.stock_quantity?.message}><input type="number" className={field} {...register("stock_quantity")} /></Field>
+        <Field label="Quantidade disponível" error={errors.stock_quantity?.message} hint="Ao repor o estoque, um produto esgotado volta automaticamente para ativo."><input type="number" min="0" step="1" className={field} {...register("stock_quantity")} /></Field>
         <Field label="Status" error={errors.status?.message}><select className={field} {...register("status")}><option value="ativo">Ativo</option><option value="inativo">Inativo</option><option value="esgotado">Esgotado</option></select></Field>
         <label className="flex items-center gap-3 rounded-xl border border-[#e6dbc9] bg-[#f9f3e8] p-4 text-sm"><input type="checkbox" className="h-4 w-4 accent-[#9c2348]" {...register("published")} /><span><strong className="block">Publicar no catálogo</strong><span className="text-[#786f66]">Permite que visitantes encontrem este produto.</span></span></label>
         <label className="flex items-center gap-3 rounded-xl border border-[#e6dbc9] bg-[#f9f3e8] p-4 text-sm"><input type="checkbox" className="h-4 w-4 accent-[#9c2348]" {...register("featured")} /><span><strong className="block">Produto em destaque</strong><span className="text-[#786f66]">Dê mais visibilidade a este sabor na página inicial.</span></span></label>
