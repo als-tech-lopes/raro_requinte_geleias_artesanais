@@ -45,13 +45,18 @@ As tabelas privadas continuam sem `SELECT` para `anon`. A interface pública nã
 
 ## Disponibilidade
 
-Quando o produto possui lotes, a disponibilidade considera somente lotes:
+Quando o produto possui lotes, a disponibilidade considera:
 
 - com saldo;
 - não bloqueados;
 - não vencidos na data local configurada.
+- a diferença positiva entre o saldo consolidado e os saldos dos lotes, que
+  representa uma reposição manual ainda não vinculada a lote.
 
-Produtos legados sem nenhum lote usam o saldo consolidado. O visitante recebe apenas um indicador de disponibilidade; a RPC valida se a quantidade solicitada pode ser atendida sem revelar o saldo interno.
+Produtos legados sem nenhum lote usam o saldo consolidado. Lotes vencidos ou
+bloqueados continuam indisponíveis e não são compensados pela nova regra. O
+visitante recebe apenas um indicador de disponibilidade; a RPC valida se a
+quantidade solicitada pode ser atendida sem revelar o saldo interno.
 
 ## Rotas públicas
 

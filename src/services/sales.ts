@@ -17,11 +17,14 @@ export async function listSaleCatalog(): Promise<{ customers: SaleCustomer[]; pr
     customers: (customers.data ?? []).map(item => ({ id: item.id, name: item.nome, phone: item.telefone, whatsapp: item.whatsapp })),
     products: (products.data ?? []).flatMap(item => {
       const lots = (item.lotes_produtos ?? []) as Array<{ quantidade_disponivel: number; validade: string; bloqueado: boolean }>;
-      const eligible = lots.length ? lots.filter(lot => !lot.bloqueado && lot.validade >= today).reduce((sum, lot) => sum + Number(lot.quantidade_disponivel), 0) : Number(item.quantidade_disponivel);
+      const consolidated = Number(item.quantidade_disponivel);
+      const tracked = lots.reduce((sum, lot) => sum + Number(lot.quantidade_disponivel), 0);
+      const eligibleLots = lots.filter(lot => !lot.bloqueado && lot.validade >= today).reduce((sum, lot) => sum + Number(lot.quantidade_disponivel), 0);
+      const eligible = eligibleLots + Math.max(consolidated - tracked, 0);
       const imageUrl = item.imagem_principal_path
         ? supabase.storage.from("product-images").getPublicUrl(item.imagem_principal_path).data.publicUrl
         : null;
-      return eligible > 0 ? [{ id: item.id, name: item.nome, weight: Number(item.peso_liquido), unit: item.unidade, price: Number(item.preco_venda), eligibleStock: eligible, consolidatedStock: Number(item.quantidade_disponivel), imagePath: imageUrl }] : [];
+      return eligible > 0 ? [{ id: item.id, name: item.nome, weight: Number(item.peso_liquido), unit: item.unidade, price: Number(item.preco_venda), eligibleStock: eligible, consolidatedStock: consolidated, imagePath: imageUrl }] : [];
     }),
   };
 }

@@ -49,6 +49,12 @@ begin
   if not exists (select 1 from public.catalogo_produtos where id = v_publicado and disponivel) then raise exception 'Produto publicado nao apareceu'; end if;
   if exists (select 1 from public.catalogo_produtos where id = v_oculto) then raise exception 'Produto despublicado foi exposto'; end if;
   if not exists (select 1 from public.catalogo_produtos where id = v_vencido and not disponivel) then raise exception 'Lote vencido compôs disponibilidade'; end if;
+  perform public.ajustar_estoque('PRODUTO', v_vencido, 12, 'Reposicao manual do teste de catalogo');
+  if not exists (select 1 from public.catalogo_produtos where id = v_vencido and disponivel) then raise exception 'Reposicao manual nao compos disponibilidade'; end if;
+  select * into v_resultado from public.catalogo_validar_sacola(jsonb_build_array(jsonb_build_object('produto_id', v_vencido, 'quantidade', 2)));
+  if not v_resultado.valido then raise exception 'Reposicao manual nao ficou valida na sacola'; end if;
+  select * into v_resultado from public.catalogo_validar_sacola(jsonb_build_array(jsonb_build_object('produto_id', v_vencido, 'quantidade', 3)));
+  if v_resultado.valido then raise exception 'Lote vencido foi somado a reposicao manual'; end if;
   if exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'catalogo_produtos' and column_name in ('custo_estimado', 'quantidade_disponivel')) then raise exception 'Custo ou saldo interno foi exposto'; end if;
 
   select count(*) into v_vendas from public.vendas;
